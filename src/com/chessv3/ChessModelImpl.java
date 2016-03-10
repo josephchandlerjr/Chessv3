@@ -9,7 +9,6 @@ public class ChessModelImpl implements ChessModel{
 	Square[][] board;
 	String player;
 	String opponent;
-	String lastPlayerToMove;
 	Square initWK;
 	Square initBK;
 	Square initWKR;
@@ -39,7 +38,7 @@ public class ChessModelImpl implements ChessModel{
 		state = new ChessState();
 		player = "WHITE";
 		opponent = "BLACK";
-		updateStateObject(false,false,null);
+		updateStateObject(null);
 		notifyObservers();
 	}
 	//methods that implement ChessObservable
@@ -55,21 +54,23 @@ public class ChessModelImpl implements ChessModel{
 	public void promote(int row, int col, String color, String piece){
 		ChessPiece promoteTo = ChessPiece.pieceFromString(color.substring(0,1)+piece);
 		setPiece(row, col, promoteTo);
-		updateStateObject(false,false,null);
+		updateStateObject(null);
 		notifyObservers();
 	}
-	public void updateStateObject(boolean isPawn, boolean endRow, Square toSquare){
-		if(isPawn && endRow){
+	public void updateStateObject(ChessMove move){
+		if(move != null && move.isPromotion()){
 			state.promotion = true;
-			state.rowColOfPromotion[0] = toSquare.getRow();
-			state.rowColOfPromotion[1] = toSquare.getCol();
+			state.rowColOfPromotion[0] = move.getTo().getRow();
+			state.rowColOfPromotion[1] = move.getTo().getCol();
 		}
 		else{
 			state.promotion = false;
-			state.rowColOfPromotion[0] = 10;
-			state.rowColOfPromotion[1] = 10;
+			state.rowColOfPromotion[0] = 99;
+			state.rowColOfPromotion[1] = 99;
 		}
-		state.lastPlayerToMove = lastPlayerToMove;
+		if(move != null){
+			state.lastPlayerToMove = move.getColor();
+		}
 		state.blackInCheck = blackCheck; //true if black king in check
 		state.whiteInCheck = whiteCheck;
 		state.whiteHasWon  = blackCheckmate; //true if black king in checkmate
@@ -118,25 +119,21 @@ public class ChessModelImpl implements ChessModel{
 	public void takeAction(int fromRow, int fromCol, int toRow, int toCol){
 		Square fromSquare = getSquare(fromRow,fromCol);
 		Square toSquare = getSquare(toRow,toCol);
-	        String myColor  = fromSquare.getPieceColor();
+	        String pieceColor  = fromSquare.getPieceColor();
 		String fromNotation = getNotationFromSquare(fromSquare);
 		String toNotation = getNotationFromSquare(toSquare);
 
-		if(!fromSquare.isOccupied()){ return;} //must be moving a piece
-		String pieceColor = fromSquare.getPieceColor();
-		
-	        if(!pieceColor.equals(player)){ return;} 
-		
+		if(!fromSquare.isOccupied()) //must be moving a piece
+			return;
+	        if(!pieceColor.equals(player)) 
+			return; 
 		String notation = fromNotation+toNotation;
+		ChessMove move = new ChessMove(notation, pieceColor, fromSquare, toSquare);
 
-		ChessMove move = new ChessMove(notation, myColor, fromSquare, toSquare);
-
-		boolean isPawn = ChessPiece.isPawn(fromSquare.getPiece());
-		boolean endRow = toSquare.getRow()==7 || toSquare.getRow()==0;
 		boolean executed = takeAction(move);
  
 		if (executed){
-			updateStateObject(isPawn,endRow,toSquare);
+			updateStateObject(move);
 			notifyObservers();
 		}
 	}
@@ -192,7 +189,6 @@ public class ChessModelImpl implements ChessModel{
 		}
 
 		scoreSheet.addMove(move);	
-		lastPlayerToMove = player;
 		updateCheckStatus();
 
 		if(colorInCheckmate("BLACK")){blackCheckmate = true;}
