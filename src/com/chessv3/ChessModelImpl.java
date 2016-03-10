@@ -24,17 +24,18 @@ public class ChessModelImpl implements ChessModel{
 	public ChessModelImpl(){
 		board = new Square[8][8];
 		//set initial location of pieces involved in castling
+		
+	}
+	public void newGame(){
+		scoreSheet = new Score();
+		board = new Square[8][8];
+		initializeBoard();
 		initBQR = board[0][0];
 		initBKR = board[0][7];
 		initWQR = board[7][0];
 		initWKR = board[7][7];
 		initBK =  board[0][4];
 		initWK =  board[7][4];
-	}
-	public void newGame(){
-		scoreSheet = new Score();
-		board = new Square[8][8];
-		initializeBoard();
 		state = new ChessState();
 		player = "WHITE";
 		opponent = "BLACK";
@@ -125,27 +126,21 @@ public class ChessModelImpl implements ChessModel{
 
 		if(!fromSquare.isOccupied()) //must be moving a piece
 			return;
-	        if(!pieceColor.equals(player)) 
+	        if(!pieceColor.equals(player))  //must be correct color
 			return; 
 		String notation = fromNotation+toNotation;
 		ChessMove move = new ChessMove(notation, pieceColor, fromSquare, toSquare);
-
-		boolean executed = takeAction(move);
  
-		if (executed){
+		if (takeAction(move)){
 			updateStateObject(move);
 			notifyObservers();
 		}
 	}
 	public boolean takeAction(ChessMove move){
 		if(move.isCastle()){
-			boolean validMove = isValidCastle(move.getColor(), move.getCastleSide());
-			if(!validMove){return false;}
-
-			//ok let's go ahead and castle
 			Square[] unMoveParams = castle(move.getColor(),move.getCastleSide());
 			if(unMoveParams == null)
-			{return false;}
+				return false;
 			//now see if king is in check
 			boolean invalid = kingInCheck(move.getColor());
 			if(invalid){
@@ -207,12 +202,14 @@ public class ChessModelImpl implements ChessModel{
 		if(kingInCheck("WHITE")){whiteCheck = true;}
 		else                    {whiteCheck = false;}
 	}
-	/** determines if given player can castle on given side
+	/**
+	 * checks if can castle, doesn't take into account if square between
+	 * rook and king are under attack, hence the 'probably' in method name
 	 * @param color the color of current player
 	 * @param side the side she wishes to castle on
 	 * @return true if is valid to castle else false
 	 */
-	private boolean isValidCastle(String color, String side){
+	private boolean isProbablyValidCastle(String color, String side){
 		 if (color.equals("WHITE")){
 			 if (side.equals("KING")){
 				 return whiteCanCastleKingSide();
@@ -649,8 +646,7 @@ public class ChessModelImpl implements ChessModel{
 	  * @param initR initial Square of rook
 	  * @return true if side can castle  side else false
 	  */
-	 private boolean canCastle(Square initK, Square initR, String side)
-	 {
+	 private boolean canCastle(Square initK, Square initR, String side){
 		 int kingShift = 8;
 		 int rookShift = 8; 
 		 if (side.equals("KING"))
@@ -665,23 +661,24 @@ public class ChessModelImpl implements ChessModel{
 		 }
 		 //rook and king in original positions?
 		 if (scoreSheet.contains(initR) || scoreSheet.contains(initK))
-		 { return false;}
+			 return false;
 		 //no pieces between
-		 if (piecesBetween(initR,initK))
-		 { return false;}
-
+		 if (piecesBetween(initR,initK)) 
+			 return false;
 		 return true;
-
 	 } 
 	 /**
 	  * castles
 	  * @param color of side to castle, is either "BLACK" or "WHITE"
 	  * @param side to castle on, is either "KING" or "QUEEN"
 	  * @return 4 square array of [initial king's pos, new king's pos, initial rook's position, new rook pos]
-	  * @return null if is no possible to castle because king would pass through check
+	  * @return null if is not possible to castle
 	  */
-	 private Square[] castle(String color, String side)
-	 {
+	 private Square[] castle(String color, String side){
+		//check preliminarly if looks like can castle
+		boolean validMove = isProbablyValidCastle(color, side);
+		if(!validMove)
+			return null;
 		 // to make compiler happy
 		 Square initK = null;
 		 Square initR = null;
@@ -689,39 +686,31 @@ public class ChessModelImpl implements ChessModel{
 		 Square newRookSqr = null;
 		 Square intermediarySquare = null; //the square king must pass through
 
-		 if (color.equals("WHITE"))
-		 {
+		 if (color.equals("WHITE")){
 			 initK = initWK;
-
-			 if (side.equals("KING"))
-			 {
+			 if (side.equals("KING")){
 				 initR = initWKR;
 				 newKingSqr = initK.east().east();
 				 newRookSqr = initR.west().west();
 				 intermediarySquare = initK.east(); 
 			 }
-			 else if(side.equals("QUEEN"))
-			 {
+			 else if(side.equals("QUEEN")){
 				 initR = initWQR;
 				 newKingSqr = initK.west().west();
 				 newRookSqr = initR.east().east().east();
 				 intermediarySquare = initK.west(); 
 			 }
 		 }
-		 else if (color.equals("BLACK"))
-		 {
+		 else if (color.equals("BLACK")){
 			 initK = initBK;
-
-			 if (side.equals("KING"))
-			 {
+			 if (side.equals("KING")){
 				 initR = initBKR;
 				 newKingSqr = initK.east().east();
 				 newRookSqr = initR.west().west();
 				 intermediarySquare = initK.east(); 
  
 			 }
-			 else if(side.equals("QUEEN"))
-			 {
+			 else if(side.equals("QUEEN")){
 				 initR = initBQR;
 				 newKingSqr = initK.west().west();
 				 newRookSqr = initR.east().east().east();
@@ -734,8 +723,7 @@ public class ChessModelImpl implements ChessModel{
 		 movePiece(oneSqr);
 		 boolean invalid = kingInCheck(color);
 		 unMovePiece(oneSqr);
-		 if (invalid)
-		 {
+		 if (invalid){
 			 return null;
 		 }
 			
