@@ -15,9 +15,10 @@ public class ChessMove{
 	private boolean twoRowPawnMove;
 	private boolean promotion;
 	private String castleSide = "";
-	private ChessPiece promoteTo;
 	private String color;
 	private String notation;
+
+	public ChessMove(){}
 
 	public ChessMove(String color, Square from, Square to){
 		this.from = from;
@@ -33,17 +34,17 @@ public class ChessMove{
 		ChessPiece piece = from.getPiece();
 		
 		if(piece instanceof King){ //if it's a king and move is at least 2 columns
-			if (colDifference(from,to) > 1){
+			if(colDifference(from,to) < -1){
 				this.castleSide = "KING";
 				this.castle = true;
 			}
-			else if(colDifference(from,to) < 1){
+			else if(colDifference(from,to) > 1){
 				this.castleSide = "QUEEN";
 				this.castle = true;
 			}
 		}
 		else if(piece instanceof Pawn){
-			if(rowDifference(from,to) == 2){
+			if(absRowDifference(from,to) == 2){
 				this.twoRowPawnMove = true;
 			}
 			else if(isDiagonal(from, to) && to.getPiece() == null){
@@ -63,29 +64,30 @@ public class ChessMove{
 	public Square getFrom(){return from;}
 	public Square getTo(){return to;}
 	public Square getEnPassantCapture(){return enPassantCapture;}
-	public ChessPiece getPromoteTo(){return promoteTo;}
 	public String getColor(){return color;}
 	public String getCastleSide(){return castleSide;}
 	public String getNotation(){return notation;}
 
 	//setters
 	
-	private int rowDifference(Square A, Square B)
-	{
+	private int absRowDifference(Square A, Square B){
 		int rowA = A.getRow();
 		int rowB = B.getRow();
 		return Math.abs(rowA - rowB);
 	}
-	private int colDifference(Square A, Square B)
-	{
+	private int absColDifference(Square A, Square B){
 		int colA = A.getCol();
 		int colB = B.getCol();
 		return Math.abs(colA - colB);
 	}
-	private boolean isDiagonal(Square A, Square B)
-	{
-		int r = rowDifference(A,B);
-		int c = colDifference(A,B);
+	private int colDifference(Square A, Square B){
+		int colA = A.getCol();
+		int colB = B.getCol();
+		return colA - colB;
+	}
+	private boolean isDiagonal(Square A, Square B){
+		int r = absRowDifference(A,B);
+		int c = absColDifference(A,B);
 		return r != 0 && r==c;
 	}
 }

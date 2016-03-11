@@ -30,9 +30,7 @@ public class ChessView implements Observer{
 		build();
 	}
 	public void update(){
-		ChessState state = model.getState();
-		updateBoard(state.board);
-
+		updateBoard(model.getBoard());
 	}
 	public void updateBoard(String[][] modelBoard){
 		for(int r=0; r<8; r++){
@@ -60,13 +58,13 @@ public class ChessView implements Observer{
 								   possibleValues,
 								   possibleValues[0]);
 		String result = (String)(selectedValue);
-		switch(result){
-			case("Queen") : return "Q";
-			case("Knight"): return "N";
+		if(result != null){
+			if(result.equals("Queen"))
+				return "Q";
+			if(result.equals("Knight"))
+				return "N";
 		}
-		assert 1==2 : "shouldn't be here";
 		return null;
-
 	}
 
 	public Image findResourceByPieceID(String pieceID){

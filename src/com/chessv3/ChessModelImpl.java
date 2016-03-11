@@ -4,18 +4,18 @@ import java.util.*;
 import java.io.*;
 
 public class ChessModelImpl implements ChessModel{
-	List<Observer> observers = new ArrayList<Observer>();
-	ChessState state;
-	Square[][] board;
-	String player;
-	String opponent;
-	Square initWK;
-	Square initBK;
-	Square initWKR;
-	Square initWQR;
-	Square initBKR;
-	Square initBQR;
-	Score scoreSheet;
+	private List<Observer> observers = new ArrayList<Observer>();
+	private ChessState state;
+	private Square[][] board;
+	private String player;
+	private String opponent;
+	private Square initWK;
+	private Square initBK;
+	private Square initWKR;
+	private Square initWQR;
+	private Square initBKR;
+	private Square initBQR;
+	private Score scoreSheet;
 	private boolean blackCheck; //true if black king in check
 	private boolean whiteCheck;
 	private boolean blackCheckmate; //true if black king in checkmate
@@ -23,8 +23,6 @@ public class ChessModelImpl implements ChessModel{
 
 	public ChessModelImpl(){
 		board = new Square[8][8];
-		//set initial location of pieces involved in castling
-		
 	}
 	public void newGame(){
 		scoreSheet = new Score();
@@ -39,10 +37,9 @@ public class ChessModelImpl implements ChessModel{
 		state = new ChessState();
 		player = "WHITE";
 		opponent = "BLACK";
-		updateStateObject(null);
+		updateStateObject(new ChessMove());
 		notifyObservers();
 	}
-	//methods that implement ChessObservable
 	public void registerObserver(Observer obs){
 		observers.add(obs);
 	}
@@ -52,62 +49,61 @@ public class ChessModelImpl implements ChessModel{
 			iterator.next().update();
 		}
 	}
-	public void promote(int row, int col, String color, String piece){
-		ChessPiece promoteTo = ChessPiece.pieceFromString(color.substring(0,1)+piece);
-		setPiece(row, col, promoteTo);
-		updateStateObject(null);
-		notifyObservers();
-	}
-	public void updateStateObject(ChessMove move){
-		if(move != null && move.isPromotion()){
-			state.promotion = true;
-			state.rowColOfPromotion[0] = move.getTo().getRow();
-			state.rowColOfPromotion[1] = move.getTo().getCol();
-		}
-		else{
-			state.promotion = false;
-			state.rowColOfPromotion[0] = 99;
-			state.rowColOfPromotion[1] = 99;
-		}
-		if(move != null){
-			state.lastPlayerToMove = move.getColor();
-		}
-		state.blackInCheck = blackCheck; //true if black king in check
-		state.whiteInCheck = whiteCheck;
-		state.whiteHasWon  = blackCheckmate; //true if black king in checkmate
-		state.blackHasWon = whiteCheckmate;
+	public String[][] getBoard(){
+		String[][] result = new String[8][8];
 		for(int r = 0; r < 8; r++){
 			for(int c=0; c < 8; c++){
 				Square s = board[r][c];
 				String pieceColor = s.getPieceColor();
 				if(pieceColor.equals("")){
-					state.board[r][c] = null;
+					result[r][c] = null;
 				}
 				else{
-					state.board[r][c] = pieceColor.substring(0,1) + 
+					result[r][c] = pieceColor.substring(0,1) + 
 						            s.getPiece().toString();
 				}
 				
 			}
+		}//end for loop
+		return result;
+	}
+	public void promote(int row, int col, String color, String piece){
+		ChessPiece promoteTo = ChessPiece.pieceFromString(color.substring(0,1)+piece);
+		setPiece(row, col, promoteTo);
+		updateStateObject(new ChessMove());
+		notifyObservers();
+	}
+	private void updateStateObject(ChessMove move){
+		if(move.isPromotion()){
+			state.promotion = true;
+			state.rowOfPromotion = move.getTo().getRow();
+			state.colOfPromotion = move.getTo().getCol();
 		}
+		else
+			state.promotion = false;
+		state.lastPlayerToMove = move.getColor();
+		state.blackInCheck = blackCheck; //true if black king in check
+		state.whiteInCheck = whiteCheck;
+		state.whiteHasWon  = blackCheckmate; //true if black king in checkmate
+		state.blackHasWon = whiteCheckmate;
 	}
 
 	public ChessState getState(){
 		return state;
 	}
 
-	public void addResultToScoreSheet(String winner){
+	private void addResultToScoreSheet(String winner){
 		scoreSheet.addResult(winner);
 	}
 
-	public boolean isInCheck(String color){	
+	private boolean isInCheck(String color){	
 		if(color.equals("BLACK")){
 			return blackCheck;
 		}
 		return whiteCheck;
 	}
 
-	public String getNotationFromSquare(Square s) {
+	private String getNotationFromSquare(Square s) {
 		String file = s.getFile();
 		String rank = s.getRank();
 		String pieceID = "";
@@ -136,27 +132,18 @@ public class ChessModelImpl implements ChessModel{
 			notifyObservers();
 		}
 	}
-	public boolean takeAction(ChessMove move){
+	private boolean takeAction(ChessMove move){
+		String color = move.getColor();
 		if(move.isCastle()){
-			Square[] unMoveParams = castle(move.getColor(),move.getCastleSide());
-			if(unMoveParams == null)
+			boolean validMove = castle(color, move.getCastleSide());
+			if(!validMove)
 				return false;
-			//now see if king is in check
-			boolean invalid = kingInCheck(move.getColor());
-			if(invalid){
-				Square initK = unMoveParams[0];
-				Square newK =  unMoveParams[1];
-				Square initR = unMoveParams[2];
-				Square newR =  unMoveParams[3];
-				unCastle(initK,newK,initR,newR);
-				return false;
-			}
 		}
 		else if(move.isEnPassant()){
 			boolean validMove = isValidEnPassant(move);
                         if(!validMove){return false;}
 			moveEnPassant(move);
-			boolean invalid = kingInCheck(move.getColor());
+			boolean invalid = kingInCheck(color);
 			if(invalid){
 				unMoveEnPassant(move);
 				return false;
@@ -166,7 +153,7 @@ public class ChessModelImpl implements ChessModel{
 			boolean validMove = isValidTwoRowPawnMove(move);
                         if(!validMove){return false;}
 			movePawnTwoRows(move);
-			boolean invalid = kingInCheck(move.getColor());
+			boolean invalid = kingInCheck(color);
 			if(invalid){
 				unMovePawnTwoRows(move);
 				return false;
@@ -176,7 +163,7 @@ public class ChessModelImpl implements ChessModel{
 			boolean validMove = isValidMove(move);
                         if(!validMove){return false;}
 			movePiece(move);
-			boolean invalid = kingInCheck(move.getColor());
+			boolean invalid = kingInCheck(color);
 			if(invalid){
 				unMovePiece(move);
 				return false;
@@ -196,39 +183,13 @@ public class ChessModelImpl implements ChessModel{
 
 		return true;
 	}
-	public void updateCheckStatus(){
+	private void updateCheckStatus(){
 		if(kingInCheck("BLACK")){blackCheck = true;}
 		else                    {blackCheck = false;}
 		if(kingInCheck("WHITE")){whiteCheck = true;}
 		else                    {whiteCheck = false;}
 	}
-	/**
-	 * checks if can castle, doesn't take into account if square between
-	 * rook and king are under attack, hence the 'probably' in method name
-	 * @param color the color of current player
-	 * @param side the side she wishes to castle on
-	 * @return true if is valid to castle else false
-	 */
-	private boolean isProbablyValidCastle(String color, String side){
-		 if (color.equals("WHITE")){
-			 if (side.equals("KING")){
-				 return whiteCanCastleKingSide();
 
-			 }
-			 else if(side.equals("QUEEN")){
-				 return whiteCanCastleQueenSide();
-			 }
-		 }
-		 else if (color.equals("BLACK")){
-			 if (side.equals("KING")){
-				 return blackCanCastleKingSide();
-			 }
-			 else if(side.equals("QUEEN")){
-				 return blackCanCastleQueenSide();
-			 }
-		 }
-		 return false;
-	}
 	/**moves a piece, used for 'normal' moves not en passant, two row pawn moves, or castling
 	 * @param move move object
 	 */
@@ -550,7 +511,7 @@ public class ChessModelImpl implements ChessModel{
 	  * @param from Square we are moving from
 	  * @return List of Square elements which are valid moves from starting point
 	  */
-	 public List<Square> getAllMoves(Square from)
+	 private List<Square> getAllMoves(Square from)
 	 {
 		 String color = from.getPiece().getColor();
 		 List<Square> result = new ArrayList<Square>();
@@ -612,41 +573,12 @@ public class ChessModelImpl implements ChessModel{
 	 }
 
 	 /**
-	  * determines if white can castle king side
-	  * @return true if white can castle king side else false
-	  */
-	 private boolean whiteCanCastleKingSide(){
-		 return canCastle(initWK, initWKR, "KING");
-	 }
-	 /**
-	  * determines if black can castle king side
-	  * @return true if black can castle king side else false
-	  */
-	 private boolean blackCanCastleKingSide(){
-		 return canCastle(initBK, initBKR, "KING");
-	 } 
-
-	 /**
-	  * determines if white can castle queen side
-	  * @return true if white can castle queen side else false
-	  */
-	 private boolean whiteCanCastleQueenSide(){
-		 return canCastle(initWK, initWQR, "QUEEN");
-	 }
-	 /**
-	  * determines if black can castle queen side
-	  * @return true if black can castle queen side else false
-	  */
-	 private boolean blackCanCastleQueenSide(){
-		 return canCastle(initBK, initBQR, "QUEEN");
-	 } 
-	 /**
-	  * determines if given side can castle side
+	  * determines if king and rook in original position and no pieces between them
 	  * @param initK initial Square of king
 	  * @param initR initial Square of rook
 	  * @return true if side can castle  side else false
 	  */
-	 private boolean canCastle(Square initK, Square initR, String side){
+	 private boolean checkCastlePosition(Square initK, Square initR, String side){
 		 int kingShift = 8;
 		 int rookShift = 8; 
 		 if (side.equals("KING"))
@@ -674,69 +606,68 @@ public class ChessModelImpl implements ChessModel{
 	  * @return 4 square array of [initial king's pos, new king's pos, initial rook's position, new rook pos]
 	  * @return null if is not possible to castle
 	  */
-	 private Square[] castle(String color, String side){
-		//check preliminarly if looks like can castle
-		boolean validMove = isProbablyValidCastle(color, side);
-		if(!validMove)
-			return null;
-		 // to make compiler happy
-		 Square initK = null;
-		 Square initR = null;
-		 Square newKingSqr = null;
-		 Square newRookSqr = null;
-		 Square intermediarySquare = null; //the square king must pass through
+	 private boolean castle(String color, String side){
+		// to make compiler happy
+		Square initK = null;
+		Square initR = null;
+	        Square newKingSqr = null;
+		Square newRookSqr = null;
+		Square intermediarySquare = null; //the square king must pass through
 
-		 if (color.equals("WHITE")){
-			 initK = initWK;
-			 if (side.equals("KING")){
-				 initR = initWKR;
-				 newKingSqr = initK.east().east();
-				 newRookSqr = initR.west().west();
-				 intermediarySquare = initK.east(); 
-			 }
-			 else if(side.equals("QUEEN")){
-				 initR = initWQR;
-				 newKingSqr = initK.west().west();
-				 newRookSqr = initR.east().east().east();
-				 intermediarySquare = initK.west(); 
-			 }
-		 }
-		 else if (color.equals("BLACK")){
-			 initK = initBK;
-			 if (side.equals("KING")){
-				 initR = initBKR;
-				 newKingSqr = initK.east().east();
-				 newRookSqr = initR.west().west();
-				 intermediarySquare = initK.east(); 
- 
-			 }
-			 else if(side.equals("QUEEN")){
-				 initR = initBQR;
-				 newKingSqr = initK.west().west();
-				 newRookSqr = initR.east().east().east();
-				 intermediarySquare = initK.west(); 
-			 }
-		 }
-
-		 //before castling let's see if king will pass through check on way to destination	
-		 ChessMove oneSqr = new ChessMove(color, initK, intermediarySquare);
-		 movePiece(oneSqr);
-		 boolean invalid = kingInCheck(color);
-		 unMovePiece(oneSqr);
-		 if (invalid){
-			 return null;
-		 }
-			
-
-		 ChessPiece king = initK.getPiece();
-		 ChessPiece rook = initR.getPiece();
-		 initK.setPiece(null);
-		 initR.setPiece(null);
-		 newKingSqr.setPiece(king);
-		 newRookSqr.setPiece(rook);
-		 
-		 Square[] result = {initK, newKingSqr, initR, newRookSqr};
-		 return result;
+		if (color.equals("WHITE")){
+			initK = initWK;
+	 		if (side.equals("KING")){
+				initR = initWKR;
+				newKingSqr = initK.east().east();
+				newRookSqr = initR.west().west();
+				intermediarySquare = initK.east(); 
+			}
+			else if(side.equals("QUEEN")){
+				initR = initWQR;
+				newKingSqr = initK.west().west();
+				newRookSqr = initR.east().east().east();
+				intermediarySquare = initK.west(); 
+			}
+		}
+		else if (color.equals("BLACK")){
+			initK = initBK;
+			if (side.equals("KING")){
+				initR = initBKR;
+				newKingSqr = initK.east().east();
+				newRookSqr = initR.west().west();
+				intermediarySquare = initK.east(); 
+			}
+			else if(side.equals("QUEEN")){
+				initR = initBQR;
+				newKingSqr = initK.west().west();
+				newRookSqr = initR.east().east().east();
+				intermediarySquare = initK.west(); 
+			}
+		}
+		boolean correctAlignment = checkCastlePosition(initK, initR, side);
+		if(!correctAlignment)
+			return false;
+		//before castling let's see if king will pass through check on way to destination	
+		ChessMove oneSqr = new ChessMove(color, initK, intermediarySquare);
+		movePiece(oneSqr);
+		boolean invalid = kingInCheck(color);
+		unMovePiece(oneSqr);
+		if (invalid)
+			return false;
+		//now lets do full castle
+		ChessPiece king = initK.getPiece();
+		ChessPiece rook = initR.getPiece();
+		initK.setPiece(null);
+		initR.setPiece(null);
+		newKingSqr.setPiece(king);
+		newRookSqr.setPiece(rook);
+		//now before we are done, see if king in check
+		invalid = kingInCheck(color);
+		if(invalid){
+			unCastle(initK,newKingSqr,initR,newRookSqr);
+			return false;
+	        }
+		return true;
 	 }
 	 /** reverses a castle
 	  * @param initK initial position of king prior to castling
@@ -752,7 +683,7 @@ public class ChessModelImpl implements ChessModel{
 		 initR.setPiece(initR.getPreviousPiece());
 	 }
 
-	public void setDirectionalVar() {	
+	private void setDirectionalVar() {	
 		//set NORTH, SOUTH, EAST, WEST instance variables on each Square
 		for (Square[] r : board){
 			for (Square sqr : r){
@@ -809,7 +740,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param color of pieces we are looking for
 	 * @return List of squares
 	 */
-	public List<Square> getSquaresByPieceColor(String color) {
+	private List<Square> getSquaresByPieceColor(String color) {
 		List<Square> result = new ArrayList<Square>();
 		for (Square[] row : board){
 			for(Square sqr : row){
@@ -827,7 +758,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param col column square you want lies on
 	 * @return Square instance you asked for
 	 */
-	public Square getSquare(int row, int col) {
+	private Square getSquare(int row, int col) {
 		return board[row][col];
 	}
         /**
@@ -836,7 +767,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param col column of square
 	 * @param piece ChessPiece to assign
 	 */
-	public void setPiece(int row, int col, ChessPiece piece) {
+	private void setPiece(int row, int col, ChessPiece piece) {
 		Square square = board[row][col];
 		square.setPiece(piece);
 	}
@@ -854,7 +785,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param myColor can be String BLACK or WHITE
 	 * @return if WHITE is give as param return BLACK else WHITE
 	 */
-	public String otherColor(String myColor) {
+	private String otherColor(String myColor) {
 		if (myColor.equals("WHITE")){ return "BLACK";}
 		return "WHITE";
 	} 
@@ -865,7 +796,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param myColor a string either "BLACK" or "WHITE" which is your color
 	 * @return true if square given has an opponents piece on it else false
 	 */
-	public boolean isOccupiedByOpponent(Square s, String myColor) {
+	private boolean isOccupiedByOpponent(Square s, String myColor) {
 		String opponentsColor = otherColor(myColor);
 		return s.isOccupied() && s.getPiece().getColor().equals(opponentsColor);
 	}
@@ -876,7 +807,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param myColor a string either "BLACK" or "WHITE" which is your color
 	 * @return true if square given has one of your pieces on it else false
 	 */
-	public boolean isOccupiedByPieceOfSameColor(Square s, String myColor) {
+	private boolean isOccupiedByPieceOfSameColor(Square s, String myColor) {
 		boolean result;
 		if (!s.isOccupied()) { 
 			return false;
@@ -893,7 +824,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param rep string rep of piece per PGN, for example "N" is a knight, "K" a king
 	 * @return true if square has such a piece on it else false
 	 */
-	public boolean isOccupiedByPiece(Square s, String color, String rep) {
+	private boolean isOccupiedByPiece(Square s, String color, String rep) {
 		String fullRep = color.substring(0,1) + rep;
 		return s.isOccupied() && s.getPiece().toString().equals(fullRep);
 	}
@@ -903,7 +834,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param to another Square on board
 	 * @return true if there are occupied squares between Squares given else false 
 	 */
-	public boolean piecesBetween(Square from, Square to) {
+	private boolean piecesBetween(Square from, Square to) {
 		List<Square> squares = squaresBetween(from, to);
 		for (Square square : squares) {
 			if (square.isOccupied()) {
@@ -919,7 +850,7 @@ public class ChessModelImpl implements ChessModel{
 	 * @param to another Square on board
 	 * @return array of Square objects between the two give Squares
 	 */
-	public List<Square> squaresBetween(Square from, Square to) {       
+	private List<Square> squaresBetween(Square from, Square to) {       
 
 		List<Square> result = new ArrayList<Square>();
 		int fromRow = from.getRow();
@@ -948,25 +879,25 @@ public class ChessModelImpl implements ChessModel{
 		}
 		return result;
 	 }
-	public boolean areOnSameColumn(Square A, Square B) {       
+	private boolean areOnSameColumn(Square A, Square B) {       
 		int fromCol = A.getCol();
 		int toCol = B.getCol();
 
 		return fromCol == toCol;
 	}
-	public boolean areOnSameRow(Square A, Square B) {       
+	private boolean areOnSameRow(Square A, Square B) {       
 		int fromRow = A.getRow();
 		int toRow = B.getRow();
 
 		return fromRow == toRow;
 	}
 	/**
-	 * tests if two pieces are on same diagonal
+	 * tests if two squares are on same diagonal
 	 * @param A a Square
 	 * @param B a Square
 	 * @return true if A and B on the same diagonal else false
 	 */
-	public boolean areOnSameDiagonal(Square A, Square B) {
+	private boolean areOnSameDiagonal(Square A, Square B) {
 		int fromCol = A.getCol();
 		int toCol = B.getCol();
 		int fromRow = A.getRow();

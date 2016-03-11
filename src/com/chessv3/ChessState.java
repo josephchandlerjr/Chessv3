@@ -8,7 +8,6 @@ import java.awt.*;
  * that is passed from model to view
  */
 public class ChessState{
-	String[][] board;//just color and piece ex: BP or WQ
 	String toMove;
 	boolean whiteInCheck;
 	boolean blackInCheck;
@@ -16,10 +15,10 @@ public class ChessState{
 	boolean blackHasWon;
 	boolean promotion;
 	String lastPlayerToMove;
-	int[] rowColOfPromotion = new int[2];
+	int rowOfPromotion;
+	int colOfPromotion;
 
 	public ChessState(){
-		this.board = new String[8][8];
 		toMove = "WHITE";
 	}
 	

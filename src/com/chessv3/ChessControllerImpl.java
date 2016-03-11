@@ -30,12 +30,13 @@ public class ChessControllerImpl implements ChessController{
 	public void update(){
 		ChessState state = model.getState();
 		if(state.promotion){
-			int row = state.rowColOfPromotion[0];
-			int col = state.rowColOfPromotion[1];
+			int row = state.rowOfPromotion;
+			int col = state.colOfPromotion;
 			String color = state.lastPlayerToMove;
 			String piece = view.getPromotion();
 			promote(row,col,color,piece);
 		}
+		//ask view to set status of things
 	}
 	public void newGame(){
 		model.newGame();
@@ -43,7 +44,4 @@ public class ChessControllerImpl implements ChessController{
 	public void exit(){
 		System.exit(0);
 	}
-
-
-
 }
