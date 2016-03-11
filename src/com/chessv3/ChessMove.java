@@ -21,9 +21,7 @@ public class ChessMove{
 	public ChessMove(){}
 
 	public ChessMove(String color, Square from, Square to){
-		this.from = from;
-		this.to = to;
-		this.color = color;
+		this("",color,from,to);
 	}
 
 	public ChessMove(String notation, String color, Square from, Square to){

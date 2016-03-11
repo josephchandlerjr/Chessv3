@@ -1,7 +1,6 @@
 package com.chessv3;
 
 import java.util.*;
-import java.io.*;
 
 public class ChessModelImpl implements ChessModel{
 	private List<Observer> observers = new ArrayList<Observer>();
@@ -24,6 +23,9 @@ public class ChessModelImpl implements ChessModel{
 	public ChessModelImpl(){
 		board = new Square[8][8];
 	}
+	/**
+	 * API used it initialize a new game
+	 */
 	public void newGame(){
 		scoreSheet = new Score();
 		board = new Square[8][8];
@@ -40,6 +42,9 @@ public class ChessModelImpl implements ChessModel{
 		updateStateObject(new ChessMove());
 		notifyObservers();
 	}
+	/**
+	 * API used to register observers
+	 */
 	public void registerObserver(Observer obs){
 		observers.add(obs);
 	}
@@ -49,6 +54,9 @@ public class ChessModelImpl implements ChessModel{
 			iterator.next().update();
 		}
 	}
+	/**
+	 * @return string array representing board pieces
+	 */
 	public String[][] getBoard(){
 		String[][] result = new String[8][8];
 		for(int r = 0; r < 8; r++){
@@ -67,6 +75,13 @@ public class ChessModelImpl implements ChessModel{
 		}//end for loop
 		return result;
 	}
+	/**
+	 * API promotes a pawn
+	 * @param row row where square of promoted pawn lies
+	 * @param col column where square of promoted pawn lies
+	 * @param color color of piece to be promoted
+	 * @param piece string representation of piece pawn is to be promoted to
+	 */ 
 	public void promote(int row, int col, String color, String piece){
 		ChessPiece promoteTo = ChessPiece.pieceFromString(color.substring(0,1)+piece);
 		setPiece(row, col, promoteTo);
@@ -88,6 +103,10 @@ public class ChessModelImpl implements ChessModel{
 		state.blackHasWon = whiteCheckmate;
 	}
 
+	/**
+	 * API
+	 * @return a state object
+	 */
 	public ChessState getState(){
 		return state;
 	}
@@ -102,7 +121,10 @@ public class ChessModelImpl implements ChessModel{
 		}
 		return whiteCheck;
 	}
-
+	/**
+	 * given a square, returns string representing
+	 * piece+file+rank 
+	 */
 	private String getNotationFromSquare(Square s) {
 		String file = s.getFile();
 		String rank = s.getRank();
@@ -113,6 +135,9 @@ public class ChessModelImpl implements ChessModel{
 		}
 		return pieceID + file + rank;
 	}
+	/**
+	 * API exposed to other objects used to make a chess move
+	 */
 	public void takeAction(int fromRow, int fromCol, int toRow, int toCol){
 		Square fromSquare = getSquare(fromRow,fromCol);
 		Square toSquare = getSquare(toRow,toCol);
@@ -234,7 +259,6 @@ public class ChessModelImpl implements ChessModel{
 	}
 	/** 
 	 * undos a change made by moveEnPassant method
-	 * @param move Move object describing original move
 	 */
 	private void unMoveEnPassant(ChessMove move){
 		Square from = move.getFrom();
@@ -246,7 +270,6 @@ public class ChessModelImpl implements ChessModel{
 	}
 
 	/** makes en passant
-	 * @param move Move object describing move
 	 */
 	private void moveEnPassant(ChessMove move){
 		Square from = move.getFrom();
@@ -260,8 +283,6 @@ public class ChessModelImpl implements ChessModel{
 	}
 	/**
 	 * determines if a two row pawn move is a valid move
-	 * @param move Move object describing move
-	 * @return true if is valid move else false
 	 */
 	private boolean isValidTwoRowPawnMove(ChessMove move){
 		if(!ChessPiece.isPawn(move.getFrom().getPiece()))
@@ -289,8 +310,6 @@ public class ChessModelImpl implements ChessModel{
 
 	/**
 	 * determines if en passant is a valid move
-	 * @param move Move object describing move
-	 * @return true if is valid move else false
 	 */
 	private boolean isValidEnPassant(ChessMove move){
 		// last move must be two square pawn move
@@ -327,8 +346,6 @@ public class ChessModelImpl implements ChessModel{
 	}
 	/**
 	 * determines if a move is a valid move
-	 * @param move Move object describing move
-	 * @return true if is valid move else false
 	 */
 	 private boolean isValidMove(ChessMove move){
 		 Square from = move.getFrom();
@@ -350,10 +367,7 @@ public class ChessModelImpl implements ChessModel{
 		 return false;
 	 }
 	/**
-	 * determines if a pawn is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
+	 * determines if a pawn move is valid (not used for en passant or two-row moves
 	 */
 	 private boolean isValidPawnMove(Square from, Square to){ 
 		 if(!ChessPiece.isPawn(from.getPiece())){return false;}
@@ -385,9 +399,6 @@ public class ChessModelImpl implements ChessModel{
 	 }
 	/**
 	 * determines if a rook move is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
 	 */
 	 private boolean isValidRookMove(Square from, Square to){       
 
@@ -402,9 +413,6 @@ public class ChessModelImpl implements ChessModel{
 	 }
 	/**
 	 * determines if a Knight is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
 	 */
          private boolean isValidKnightMove(Square from, Square to){ 
 		 int fromRow = from.getRow();
@@ -422,10 +430,7 @@ public class ChessModelImpl implements ChessModel{
 		 
 	 }
 	/**
-	 * determines if a bishop is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
+	 * determines if a Bishop is a valid move
 	 */
 	 private boolean isValidBishopMove(Square from, Square to){ 
 		 ChessPiece piece= from.getPiece();
@@ -438,21 +443,14 @@ public class ChessModelImpl implements ChessModel{
 	 }
 
 	/**
-	 * determines if a queen is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
+	 * determines if a Queen is a valid move
 	 */
 	 private boolean isValidQueenMove(Square from, Square to){
 		 return isValidRookMove(from,to) || isValidBishopMove(from,to);
 	 }
 
-	
 	/**
-	 * determines if a pawn is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
+	 * determines if a King is a valid move
 	 */
 	 private boolean isValidKingMove(Square from, Square to){    
 
@@ -468,10 +466,7 @@ public class ChessModelImpl implements ChessModel{
 	 }
 
 	/**
-	 * determines if a king is a valid move
-	 * @param from square moving from
-	 * @param to square moving to
-	 * @return true if is valid move else false
+	 * returns location of King of a given color
 	 */
 	 private Square findKing(String color){
 		 Square result = null;
@@ -488,57 +483,21 @@ public class ChessModelImpl implements ChessModel{
 		 return result;
 	 }
 	/**
-	 * determines if a king is in check
-	 * @param color color of king
-	 * @return true if is valid move else false
+	 * determines if a King is in check
 	 */
-	 private boolean kingInCheck(String color)
-	 {
+	 private boolean kingInCheck(String color){
 		 Square kingLoc = findKing(color);
 		 for (Square opponentSquare : getSquaresByPieceColor(otherColor(color))){
 			 ChessPiece piece = opponentSquare.getPiece();
 			 boolean moveValid =isValidMove(new ChessMove(color,opponentSquare, kingLoc));  
-			 if(moveValid){
+			 if(moveValid)
 				 return true;
-			 }
 		 }
 		 return false;
 	 }
 
-	 /** 
-	  * finds all squares that are valid moves from a given starting square, normal
-	  * moves only not en passant, two row piece moves, or castling
-	  * @param from Square we are moving from
-	  * @return List of Square elements which are valid moves from starting point
-	  */
-	 private List<Square> getAllMoves(Square from)
-	 {
-		 String color = from.getPiece().getColor();
-		 List<Square> result = new ArrayList<Square>();
-		 for (Square[] row : board){
-			 for (Square to : row){
-				 ChessMove move = new ChessMove(color,from, to);
-				 if (isValidTwoRowPawnMove(move)||isValidEnPassant(move)) {
-					 result.add(to);
-				 }
-				 if(isValidMove(move)){
-					 movePiece(move);
-					 boolean invalid = kingInCheck(move.getColor());
-					 unMovePiece(move);
-					 if(!invalid){
-						 result.add(to);
-					 } 
-				 }
-			 }
-		 }
-		 return result; 
-	 }
-
-
 	 /**
-	  * finds out if given color is in checkmate
-	  * @param color color of side we are testing
-	  * @return true if given colors king is in checkmate else false
+	  * finds if given color is in checkmate
 	  */
 	 private boolean colorInCheckmate(String color){
 		 if (!kingInCheck(color)){return false;}
@@ -567,27 +526,22 @@ public class ChessModelImpl implements ChessModel{
 						 if(!inCheck){return false;}
 					 }
 				 } 
-			 }
-		 }
+			 }//end inner for loop
+		 }//end outer for loop
 		 return true;
 	 }
 
 	 /**
 	  * determines if king and rook in original position and no pieces between them
-	  * @param initK initial Square of king
-	  * @param initR initial Square of rook
-	  * @return true if side can castle  side else false
 	  */
 	 private boolean checkCastlePosition(Square initK, Square initR, String side){
 		 int kingShift = 8;
 		 int rookShift = 8; 
-		 if (side.equals("KING"))
-		 {
+		 if (side.equals("KING")){
 			 kingShift = 2;
 			 rookShift = -2;
 		 }
-		 else if (side.equals("QUEEN"))
-		 {
+		 else if (side.equals("QUEEN")){
 			 kingShift = -2;
 			 rookShift = 3;
 		 }
@@ -601,10 +555,6 @@ public class ChessModelImpl implements ChessModel{
 	 } 
 	 /**
 	  * castles
-	  * @param color of side to castle, is either "BLACK" or "WHITE"
-	  * @param side to castle on, is either "KING" or "QUEEN"
-	  * @return 4 square array of [initial king's pos, new king's pos, initial rook's position, new rook pos]
-	  * @return null if is not possible to castle
 	  */
 	 private boolean castle(String color, String side){
 		// to make compiler happy
@@ -669,22 +619,20 @@ public class ChessModelImpl implements ChessModel{
 	        }
 		return true;
 	 }
-	 /** reverses a castle
-	  * @param initK initial position of king prior to castling
-	  * @param newKingSqr position of king after castle
-	  * @param initR initial position of rook prior to castling
-	  * @param newRookSqr position of rook after castle
+	 /** 
+	  * reverses a castle
 	  */
-	 private void unCastle(Square initK, Square newKingSqr,Square initR,Square newRookSqr)
-	 {
+	 private void unCastle(Square initK, Square newKingSqr,Square initR,Square newRookSqr){
 		 newKingSqr.setPiece(null);
 		 newRookSqr.setPiece(null);
 		 initK.setPiece(initK.getPreviousPiece());
 		 initR.setPiece(initR.getPreviousPiece());
 	 }
 
-	private void setDirectionalVar() {	
-		//set NORTH, SOUTH, EAST, WEST instance variables on each Square
+	 /**
+	  * sets instance variables that essentially link adjacent squares for convenience elsewhere
+	  */
+	 private void setDirectionalVar() {	
 		for (Square[] r : board){
 			for (Square sqr : r){
 				int row = sqr.getRow();
@@ -737,8 +685,6 @@ public class ChessModelImpl implements ChessModel{
 	
 	/**
 	 * gets all squares with a piece of given color on it
-	 * @param color of pieces we are looking for
-	 * @return List of squares
 	 */
 	private List<Square> getSquaresByPieceColor(String color) {
 		List<Square> result = new ArrayList<Square>();
@@ -754,18 +700,12 @@ public class ChessModelImpl implements ChessModel{
 
 	/**
 	 * gets a Square from the board
-	 * @param row row square you want lies on
-	 * @param col column square you want lies on
-	 * @return Square instance you asked for
 	 */
 	private Square getSquare(int row, int col) {
 		return board[row][col];
 	}
         /**
 	 * puts a piece on square
-	 * @param row row of square
-	 * @param col column of square
-	 * @param piece ChessPiece to assign
 	 */
 	private void setPiece(int row, int col, ChessPiece piece) {
 		Square square = board[row][col];
@@ -774,16 +714,14 @@ public class ChessModelImpl implements ChessModel{
 
 	 /**
 	  * checks if a row,column combination is off of the 8x8 board
-	  * @return if row,column combination if off board else false
 	  */
 	 private boolean isOffBoard(int row, int col) {
 		 return row > 7 || row < 0 || col > 7 || col < 0;
 	 }
 
 	/**
-	 * return opponents color
-	 * @param myColor can be String BLACK or WHITE
-	 * @return if WHITE is give as param return BLACK else WHITE
+	 * "WHITE" returns "BLACK"
+	 * "BLACK" returns "WHITE"
 	 */
 	private String otherColor(String myColor) {
 		if (myColor.equals("WHITE")){ return "BLACK";}
@@ -791,10 +729,7 @@ public class ChessModelImpl implements ChessModel{
 	} 
 
 	/**
-	 * tells you if a square is occupied by your opponents color
-	 * @param s Square instance you are inquiring about
-	 * @param myColor a string either "BLACK" or "WHITE" which is your color
-	 * @return true if square given has an opponents piece on it else false
+	 * checks if a square is occupied by a piece of the other(color) of given color
 	 */
 	private boolean isOccupiedByOpponent(Square s, String myColor) {
 		String opponentsColor = otherColor(myColor);
@@ -802,37 +737,19 @@ public class ChessModelImpl implements ChessModel{
 	}
 
 	/**
-	 * tells yoiu if a square is occupied by one of your pieces 
-	 * @param s Square instance you are inquiring about
-	 * @param myColor a string either "BLACK" or "WHITE" which is your color
-	 * @return true if square given has one of your pieces on it else false
+	 * checks if a square is occupied by a piece of the given color
 	 */
 	private boolean isOccupiedByPieceOfSameColor(Square s, String myColor) {
 		boolean result;
-		if (!s.isOccupied()) { 
+		if (!s.isOccupied())  
 			return false;
-		}
-		else {
+		else 
 			result =s.getPiece().getColor().equals(myColor); 
-		}
 		return result;
 	}	
-	/**
-	 * finds if a particular square is occupied by piece of give color and type
-	 * @param s square we are examining
-	 * @param color color of piece we are looking for 
-	 * @param rep string rep of piece per PGN, for example "N" is a knight, "K" a king
-	 * @return true if square has such a piece on it else false
-	 */
-	private boolean isOccupiedByPiece(Square s, String color, String rep) {
-		String fullRep = color.substring(0,1) + rep;
-		return s.isOccupied() && s.getPiece().toString().equals(fullRep);
-	}
+
 	/**
 	 * takes two pieces on same row, column, or diagonal and tells if there are pieces between them
-	 * @param from a Square on the board
-	 * @param to another Square on board
-	 * @return true if there are occupied squares between Squares given else false 
 	 */
 	private boolean piecesBetween(Square from, Square to) {
 		List<Square> squares = squaresBetween(from, to);
@@ -846,9 +763,6 @@ public class ChessModelImpl implements ChessModel{
 
 	/**
 	 * returns squares that lie between two squares on same row, column or diagonal
-	 * @param from a Square on the board
-	 * @param to another Square on board
-	 * @return array of Square objects between the two give Squares
 	 */
 	private List<Square> squaresBetween(Square from, Square to) {       
 
@@ -857,7 +771,6 @@ public class ChessModelImpl implements ChessModel{
 		int fromCol = from.getCol();
 		int toRow = to.getRow();
 		int toCol = to.getCol();
-
 		int rowStep;
 		int colStep;
 		 
@@ -878,25 +791,17 @@ public class ChessModelImpl implements ChessModel{
 			row = row + rowStep;
 		}
 		return result;
-	 }
+	}
 	private boolean areOnSameColumn(Square A, Square B) {       
 		int fromCol = A.getCol();
 		int toCol = B.getCol();
-
 		return fromCol == toCol;
 	}
 	private boolean areOnSameRow(Square A, Square B) {       
 		int fromRow = A.getRow();
 		int toRow = B.getRow();
-
 		return fromRow == toRow;
 	}
-	/**
-	 * tests if two squares are on same diagonal
-	 * @param A a Square
-	 * @param B a Square
-	 * @return true if A and B on the same diagonal else false
-	 */
 	private boolean areOnSameDiagonal(Square A, Square B) {
 		int fromCol = A.getCol();
 		int toCol = B.getCol();
