@@ -5,23 +5,20 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import javax.imageio.*;
-
 /**
  * the View in MVC
  * for user actions or actions which impact the model this
- * class will defer to the ChessControlle object
+ * class will defer to a ChessController object
  */
 public class ChessView implements Observer{
-	ChessController controller;
-	ChessModel model;
+	private ChessController controller;
+	private ChessModel model;
 
-	Color blackSquareColor = new Color(102,51,0);
-	Color whiteSquareColor = Color.white;
-
-	JFrame frame;
-	JPanel mainPanel;
-	SquarePanel[][] squares;
+	private Color blackSquareColor = new Color(102,51,0);
+	private Color whiteSquareColor = Color.white;
+	private JFrame frame;
+	private JPanel mainPanel;
+	private SquarePanel[][] squares;
 
 	public ChessView(ChessController controller, ChessModel model){
 		this.controller = controller;
@@ -32,7 +29,12 @@ public class ChessView implements Observer{
 	public void update(){
 		updateBoard(model.getBoard());
 	}
-	public void updateBoard(String[][] modelBoard){
+	/**
+	 * takes a string representation of a chess board and
+	 * uses it to populate the JPanel objects representing 
+	 * board with appropriate piece images
+	 */
+	private void updateBoard(String[][] modelBoard){
 		for(int r=0; r<8; r++){
 			for(int c=0; c<8; c++){
 				String pieceID = modelBoard[r][c];
@@ -48,9 +50,13 @@ public class ChessView implements Observer{
 		}
 	}
 
+	/**
+	 * asks the user to choose a piece to promote a pawn to
+	 * @return String representation of chosen chess piece
+	 */
 	public String getPromotion(){
 		Object[] possibleValues = {"Queen","Knight"};
-		Object selectedValue = JOptionPane.showInputDialog(null,
+		Object selectedValue = JOptionPane.showInputDialog(frame,
 				                                   "Choose one",
 								   "Input",
 								   JOptionPane.INFORMATION_MESSAGE,
@@ -67,7 +73,7 @@ public class ChessView implements Observer{
 		return null;
 	}
 
-	public Image findResourceByPieceID(String pieceID){
+	private Image findResourceByPieceID(String pieceID){
 		String color = "White";
 		String piece = "Pawn";
 		if(pieceID.substring(0,1).equals("B")){
@@ -93,15 +99,20 @@ public class ChessView implements Observer{
 		return image;
 	}
 
-        public void takeAction(int fromRow, int fromCol, int toRow, int toCol){
+        private void takeAction(int fromRow, int fromCol, int toRow, int toCol){
 		controller.takeAction(fromRow, fromCol, toRow, toCol);
 	}
 
-	public void build(){
+	private void build(){
 		frame = new JFrame("CHESS");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		buildMenuBar();
-
+		buildContent();
+		frame.pack();
+		frame.setVisible(true);
+	
+	}
+	private void buildContent(){
 		GridLayout grid = new GridLayout(8,8);
 		grid.setVgap(1);
 		grid.setHgap(1);
@@ -112,11 +123,8 @@ public class ChessView implements Observer{
 		initialize();
 	
 		frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-
-		frame.pack();
-		frame.setVisible(true);
 	}
-	public void buildMenuBar(){
+	private void buildMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		JMenu file = new JMenu("File");
@@ -141,13 +149,13 @@ public class ChessView implements Observer{
 						}});
 		file.add(exit);
 	}
-	public Color otherSquareColor(Color c){
+	private Color otherSquareColor(Color c){
 		if(c == blackSquareColor){
 			return whiteSquareColor;
 		}
 		return blackSquareColor;
 	}
-	public void initialize(){
+	private void initialize(){
 		BoardListener listener = new BoardListener();
 		squares = new SquarePanel[8][8];
 		Color squareColor = whiteSquareColor;

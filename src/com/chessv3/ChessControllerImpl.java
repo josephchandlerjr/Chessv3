@@ -1,32 +1,45 @@
 package com.chessv3;
 
-import java.io.*;
 
-
+/**
+ * the C in MVC; strategy of the view
+ * takes user input from a ChessView object and interprets it for the model
+ * is an observer of the model in order to update view appropriately
+ */
 public class ChessControllerImpl implements ChessController{
-	ObjectInputStream whitePlayer;
-	ObjectInputStream blackPlayer;
 	ChessModel model;
 	ChessView view;
 
-	public ChessControllerImpl(ObjectInputStream whitePlayer,
-			       ObjectInputStream blackPlayer,
-			       ChessModel model){
-		this.whitePlayer = whitePlayer;
-		this.blackPlayer = blackPlayer;
+	public ChessControllerImpl(ChessModel model){
 		this.model = model;
 		model.registerObserver(this);
 		this.view = new ChessView(this, model);
 	}
-
+	/**
+	 * public API the view uses to trigger move requests on model
+	 * @param fromRow row of piece being moved
+	 * @param fromCol column of piece being moved
+	 * @param toRow row piece being moved to 
+	 * @param toCol column piece being moved to
+	 */
         public void takeAction(int fromRow, int fromCol, int toRow, int toCol){
 		model.takeAction(fromRow, fromCol, toRow, toCol);
 	}
+	/**
+	 * public API the view uses to promote a pawn
+	 * @param row row on which pawn lies
+	 * @param col column on which pawn lies
+	 * @param color of pawn
+	 * @param piece representation of piece pawn promoted to
+	 */
 	public void promote(int row, int col, String color, String piece){
 		if(piece != null){
 			model.promote(row, col, color, piece);
 		}
 	}
+	/**
+	 * called by Observerables when change made
+	 */
 	public void update(){
 		ChessState state = model.getState();
 		if(state.promotion){
@@ -38,9 +51,15 @@ public class ChessControllerImpl implements ChessController{
 		}
 		//ask view to set status of things
 	}
+	/**
+	 * public API to create new game
+	 */
 	public void newGame(){
 		model.newGame();
 	}
+	/**
+	 * public API to end program
+	 */
 	public void exit(){
 		System.exit(0);
 	}

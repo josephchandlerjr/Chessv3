@@ -2,6 +2,11 @@ package com.chessv3;
 
 import java.util.*;
 
+/**
+ * Model in our MVC
+ * validates and performs moves on the board
+ * holds a Score object, a scoresheet of moves
+ */
 public class ChessModelImpl implements ChessModel{
 	private List<Observer> observers = new ArrayList<Observer>();
 	private ChessState state;
@@ -59,20 +64,20 @@ public class ChessModelImpl implements ChessModel{
 	 */
 	public String[][] getBoard(){
 		String[][] result = new String[8][8];
-		for(int r = 0; r < 8; r++){
-			for(int c=0; c < 8; c++){
-				Square s = board[r][c];
-				String pieceColor = s.getPieceColor();
-				if(pieceColor.equals("")){
-					result[r][c] = null;
-				}
-				else{
-					result[r][c] = pieceColor.substring(0,1) + 
-						            s.getPiece().toString();
-				}
-				
+		BoardIterator iter = new BoardIterator(board);
+		while(iter.hasNext()){
+			Square s = iter.next();
+			int r = s.getRow();
+			int c = s.getCol();
+			String pieceColor = s.getPieceColor();
+			if(pieceColor.equals("")){
+				result[r][c] = null;
 			}
-		}//end for loop
+			else{
+				result[r][c] = pieceColor.substring(0,1) + 
+						    s.getPiece().toString();
+			}
+		}
 		return result;
 	}
 	/**
@@ -470,15 +475,15 @@ public class ChessModelImpl implements ChessModel{
 	 */
 	 private Square findKing(String color){
 		 Square result = null;
-		 for (Square[] row : board){
-			 for (Square sqr : row){
-				 if (sqr.isOccupied()){
-					 ChessPiece p = sqr.getPiece();
-					 if(ChessPiece.isKing(p) && p.getColor().equals(color)){
-						 result = sqr;
-					 }	
-				 }
-			 }
+		 BoardIterator iter = new BoardIterator(board);
+		 while(iter.hasNext()){
+			Square sqr = iter.next();
+			if (sqr.isOccupied()){
+				 ChessPiece p = sqr.getPiece();
+				 if(ChessPiece.isKing(p) && p.getColor().equals(color)){
+					 result = sqr;
+				 }	
+			}
 		 }
 		 return result;
 	 }
@@ -500,34 +505,37 @@ public class ChessModelImpl implements ChessModel{
 	  * finds if given color is in checkmate
 	  */
 	 private boolean colorInCheckmate(String color){
-		 if (!kingInCheck(color)){return false;}
-
+		 if (!kingInCheck(color))
+			 return false;
 		 List<Square> squares = getSquaresByPieceColor(color);
 		 for (Square from : squares){
-			 for (Square[] row : board){
-				 for (Square to : row){
-					 ChessMove move = new ChessMove(color, from, to);
-					 if(isValidMove(move)){
-						 movePiece(move);
-						 boolean inCheck = kingInCheck(color);
-						 unMovePiece(move);
-						 if(!inCheck){return false;}
-					 }
-					 else if(isValidEnPassant(move)){
-						 moveEnPassant(move);
-						 boolean inCheck  = kingInCheck(color);
-						 unMoveEnPassant(move);
-						 if(!inCheck){return false;}
-					 }
-					 else if(isValidTwoRowPawnMove(move)){
-						 movePawnTwoRows(move);
-						 boolean inCheck = kingInCheck(color);
-						 unMovePawnTwoRows(move);
-						 if(!inCheck){return false;}
-					 }
-				 } 
-			 }//end inner for loop
-		 }//end outer for loop
+			 BoardIterator iter = new BoardIterator(board);
+			 while(iter.hasNext()){
+				 Square to = iter.next();
+				 ChessMove move = new ChessMove(color, from, to);
+				 if(isValidMove(move)){
+					 movePiece(move);
+					 boolean inCheck = kingInCheck(color);
+					 unMovePiece(move);
+					 if(!inCheck)
+						 return false;
+				 }
+				 else if(isValidEnPassant(move)){
+					 moveEnPassant(move);
+					 boolean inCheck  = kingInCheck(color);
+					 unMoveEnPassant(move);
+					 if(!inCheck)
+						 return false;
+				 }
+				 else if(isValidTwoRowPawnMove(move)){
+					 movePawnTwoRows(move);
+					 boolean inCheck = kingInCheck(color);
+					 unMovePawnTwoRows(move);
+					 if(!inCheck)
+						 return false;
+				 }
+			 }
+		 }
 		 return true;
 	 }
 
@@ -632,15 +640,15 @@ public class ChessModelImpl implements ChessModel{
 	 /**
 	  * sets instance variables that essentially link adjacent squares for convenience elsewhere
 	  */
-	 private void setDirectionalVar() {	
-		for (Square[] r : board){
-			for (Square sqr : r){
-				int row = sqr.getRow();
-				int col = sqr.getCol(); 
-				if(!isOffBoard(row, col+1)){sqr.setEAST(getSquare(row,col+1));}
-				if(!isOffBoard(row, col-1)){sqr.setWEST(getSquare(row,col-1));}
-			}
-		}//end for loop
+	 private void setDirectionalVar(){
+		BoardIterator iter = new BoardIterator(board);
+		while(iter.hasNext()){
+			Square sqr = iter.next();
+			int row = sqr.getRow();
+			int col = sqr.getCol(); 
+			if(!isOffBoard(row, col+1)){sqr.setEAST(getSquare(row,col+1));}
+			if(!isOffBoard(row, col-1)){sqr.setWEST(getSquare(row,col-1));}
+		}
 	}	
 
 	/**
@@ -688,14 +696,14 @@ public class ChessModelImpl implements ChessModel{
 	 */
 	private List<Square> getSquaresByPieceColor(String color) {
 		List<Square> result = new ArrayList<Square>();
-		for (Square[] row : board){
-			for(Square sqr : row){
-				if(sqr.isOccupied() && sqr.getPieceColor().equals(color)){
-					result.add(sqr);
-				}
+		BoardIterator iter = new BoardIterator(board);
+		while(iter.hasNext()){
+			Square sqr = iter.next();
+			if(sqr.isOccupied() && sqr.getPieceColor().equals(color)){
+				result.add(sqr);
 			}
 		}
-		return result; 
+		return result;
 	}
 
 	/**
