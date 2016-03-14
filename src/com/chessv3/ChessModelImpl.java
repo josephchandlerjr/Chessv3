@@ -65,12 +65,11 @@ public class ChessModelImpl implements ChessModel{
 			Square s = iter.next();
 			int r = s.getRow();
 			int c = s.getCol();
-			String pieceColor = s.getPieceColor();
-			if(pieceColor.equals("")){
+			if(!s.isOccupied()){
 				result[r][c] = null;
 			}
 			else{
-				result[r][c] = pieceColor.substring(0,1) + 
+				result[r][c] = s.getPieceColor().substring(0,1) + 
 						    s.getPiece().toString();
 			}
 		}
