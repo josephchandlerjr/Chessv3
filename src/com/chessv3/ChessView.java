@@ -17,6 +17,7 @@ public class ChessView implements Observer{
 	private Color blackSquareColor = new Color(102,51,0);
 	private Color whiteSquareColor = Color.white;
 	private JFrame frame;
+	private JPanel contentPane;
 	private JPanel mainPanel;
 	private SquarePanel[][] squares;
 
@@ -106,8 +107,10 @@ public class ChessView implements Observer{
 	private void build(){
 		frame = new JFrame("CHESS");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		contentPane = (JPanel)(frame.getContentPane());
 		buildMenuBar();
 		buildContent();
+		contentPane.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
 		frame.pack();
 		frame.setVisible(true);
 	
@@ -119,10 +122,21 @@ public class ChessView implements Observer{
 		mainPanel = new JPanel(grid);
 		mainPanel.setPreferredSize(new Dimension(70*8,70*8));
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-
+		mainPanel.setBackground(new Color(128,128,128));
 		initialize();
-	
-		frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+		contentPane.add(BorderLayout.CENTER, mainPanel);
+
+		JPanel sidePanel = new JPanel();
+		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+		sidePanel.setPreferredSize(new Dimension(100,0));
+		sidePanel.setBorder(BorderFactory.createTitledBorder("WHITE"));
+		contentPane.add(BorderLayout.WEST,sidePanel);
+
+		sidePanel = new JPanel();
+		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+		sidePanel.setPreferredSize(new Dimension(100,0));
+		sidePanel.setBorder(BorderFactory.createTitledBorder("BLACK"));
+		contentPane.add(BorderLayout.EAST, sidePanel);
 	}
 	private void buildMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
