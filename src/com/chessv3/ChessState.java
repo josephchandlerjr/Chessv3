@@ -9,9 +9,11 @@ import java.awt.*;
  */
 public class ChessState{
 	String toMove;
+	boolean whiteToMove;
+	boolean blackToMove;
 	boolean whiteInCheck;
-	boolean blackInCheck;
 	boolean whiteHasWon;
+	boolean blackInCheck;
 	boolean blackHasWon;
 	boolean promotion;
 	String lastPlayerToMove;

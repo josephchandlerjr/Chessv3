@@ -21,6 +21,10 @@ public class ChessView implements Observer{
 	private JPanel mainPanel;
 	private SquarePanel[][] squares;
 
+	//labels
+	private JLabel whiteToMove,whiteInCheck,whiteHasWon;
+	private JLabel blackToMove,blackInCheck,blackHasWon;
+
 	public ChessView(ChessController controller, ChessModel model){
 		this.controller = controller;
 		this.model = model;
@@ -113,7 +117,6 @@ public class ChessView implements Observer{
 		contentPane.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
 		frame.pack();
 		frame.setVisible(true);
-	
 	}
 	private void buildContent(){
 		GridLayout grid = new GridLayout(8,8);
@@ -130,12 +133,26 @@ public class ChessView implements Observer{
 		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 		sidePanel.setPreferredSize(new Dimension(100,0));
 		sidePanel.setBorder(BorderFactory.createTitledBorder("WHITE"));
+		whiteToMove = new JLabel();
+		whiteInCheck = new JLabel();
+		whiteHasWon = new JLabel();
+		sidePanel.add(whiteToMove);
+		sidePanel.add(whiteInCheck);
+		sidePanel.add(whiteHasWon);
+
+
 		contentPane.add(BorderLayout.WEST,sidePanel);
 
 		sidePanel = new JPanel();
 		sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 		sidePanel.setPreferredSize(new Dimension(100,0));
 		sidePanel.setBorder(BorderFactory.createTitledBorder("BLACK"));
+		blackToMove = new JLabel();
+		blackInCheck = new JLabel();
+		blackHasWon = new JLabel();
+		sidePanel.add(blackToMove);
+		sidePanel.add(blackInCheck);
+		sidePanel.add(blackHasWon);
 		contentPane.add(BorderLayout.EAST, sidePanel);
 	}
 	private void buildMenuBar(){
@@ -169,6 +186,40 @@ public class ChessView implements Observer{
 		}
 		return blackSquareColor;
 	}
+
+	public void setLabels(boolean whiteToMove,
+			      boolean whiteInCheck,
+			      boolean whiteHasWon,
+			      boolean blackToMove,
+			      boolean blackInCheck,
+			      boolean blackHasWon){
+		
+		if(whiteToMove)
+			this.whiteToMove.setText("your move");
+		else
+			this.whiteToMove.setText("waiting");
+		if(whiteInCheck)
+			this.whiteInCheck.setText("In Check!");
+		else
+			this.whiteInCheck.setText("");
+		if(whiteHasWon)
+			this.whiteHasWon.setText("You Win!");
+		else
+			this.whiteHasWon.setText("");
+		if(blackToMove)
+			this.blackToMove.setText("your move");
+		else
+			this.blackToMove.setText("waiting");
+		if(blackInCheck)
+			this.blackInCheck.setText("In Check!");
+		else
+			this.blackInCheck.setText("");
+		if(blackHasWon)
+			this.blackHasWon.setText("You Win!");
+		else
+			this.blackHasWon.setText("");
+	}
+
 	private void initialize(){
 		BoardListener listener = new BoardListener();
 		squares = new SquarePanel[8][8];

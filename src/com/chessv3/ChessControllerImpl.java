@@ -49,7 +49,12 @@ public class ChessControllerImpl implements ChessController{
 			String piece = view.getPromotion();
 			promote(row,col,color,piece);
 		}
-		//ask view to set status of things
+		view.setLabels(state.whiteToMove,
+			       state.whiteInCheck,
+			       state.whiteHasWon,
+			       state.blackToMove,
+			       state.blackInCheck,
+			       state.blackHasWon);
 	}
 	/**
 	 * public API to create new game

@@ -43,6 +43,7 @@ public class ChessModelImpl implements ChessModel{
 		updateStateObject(new ChessMove());
 		notifyObservers();
 	}
+
 	/**
 	 * API used to register observers
 	 */
@@ -94,13 +95,22 @@ public class ChessModelImpl implements ChessModel{
 			state.rowOfPromotion = move.getTo().getRow();
 			state.colOfPromotion = move.getTo().getCol();
 		}
-		else
+		else{
 			state.promotion = false;
-		state.lastPlayerToMove = move.getColor();
-		state.blackInCheck = blackCheck; //true if black king in check
-		state.whiteInCheck = whiteCheck;
-		state.whiteHasWon  = blackCheckmate; //true if black king in checkmate
-		state.blackHasWon = whiteCheckmate;
+			state.lastPlayerToMove = move.getColor();
+			state.blackInCheck = blackCheck; //true if black king in check
+			state.whiteInCheck = whiteCheck;
+			state.whiteHasWon  = blackCheckmate; //true if black king in checkmate
+			state.blackHasWon = whiteCheckmate;
+		}
+		if(player.equals(WHITE)){
+			state.whiteToMove = true;
+			state.blackToMove = false;
+		}			
+		if(player.equals(BLACK)){
+			state.blackToMove = true;
+			state.whiteToMove = false;
+		}
 	}
 
 	/**
