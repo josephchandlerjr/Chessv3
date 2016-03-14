@@ -33,9 +33,8 @@ public class ChessControllerImpl implements ChessController{
 	 * @param piece representation of piece pawn promoted to
 	 */
 	public void promote(int row, int col, String color, String piece){
-		if(piece != null){
+		if(piece != null)
 			model.promote(row, col, color, piece);
-		}
 	}
 	/**
 	 * called by Observerables when change made

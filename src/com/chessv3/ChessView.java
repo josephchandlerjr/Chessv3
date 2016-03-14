@@ -81,9 +81,8 @@ public class ChessView implements Observer{
 	private Image findResourceByPieceID(String pieceID){
 		String color = "White";
 		String piece = "Pawn";
-		if(pieceID.substring(0,1).equals("B")){
+		if(pieceID.substring(0,1).equals("B"))
 			color = "Black";
-		}
 		if(pieceID.length() > 1){
 			switch(pieceID.substring(1,2)){
 				case("R"): piece = "Rook";
@@ -181,9 +180,8 @@ public class ChessView implements Observer{
 		file.add(exit);
 	}
 	private Color otherSquareColor(Color c){
-		if(c == blackSquareColor){
+		if(c == blackSquareColor)
 			return whiteSquareColor;
-		}
 		return blackSquareColor;
 	}
 

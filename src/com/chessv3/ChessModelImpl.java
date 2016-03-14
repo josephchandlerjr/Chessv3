@@ -66,13 +66,10 @@ public class ChessModelImpl implements ChessModel{
 			Square s = iter.next();
 			int r = s.getRow();
 			int c = s.getCol();
-			if(!s.isOccupied()){
+			if(!s.isOccupied())
 				result[r][c] = null;
-			}
-			else{
-				result[r][c] = s.getPieceColor().substring(0,1) + 
-						    s.getPiece().toString();
-			}
+			else
+				result[r][c] = s.getPieceColor().substring(0,1) + s.getPiece().toString();
 		}
 		return result;
 	}
@@ -126,9 +123,8 @@ public class ChessModelImpl implements ChessModel{
 	}
 
 	private boolean isInCheck(String color){	
-		if(color.equals(BLACK)){
+		if(color.equals(BLACK))
 			return blackCheck;
-		}
 		return whiteCheck;
 	}
 	/**
@@ -140,9 +136,8 @@ public class ChessModelImpl implements ChessModel{
 		String rank = s.getRank();
 		String pieceID = "";
 		ChessPiece piece = s.getPiece();
-		if(piece != null){
+		if(piece != null)
 			pieceID = s.getPiece().toString();
-		}
 		return pieceID + file + rank;
 	}
 	/**
