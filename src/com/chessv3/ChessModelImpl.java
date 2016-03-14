@@ -11,21 +11,17 @@ public class ChessModelImpl implements ChessModel{
 	private List<Observer> observers = new ArrayList<Observer>();
 	private ChessState state;
 	private Square[][] board;
-	private String player;
-	private String opponent;
-	private Square initWK;
-	private Square initBK;
-	private Square initWKR;
-	private Square initWQR;
-	private Square initBKR;
-	private Square initBQR;
+	private String WHITE,BLACK;
+	private String player,opponent;
+	private Square initWK,initWKR,initWQR;
+	private Square initBK,initBKR,initBQR;
 	private Score scoreSheet;
-	private boolean blackCheck; //true if black king in check
-	private boolean whiteCheck;
-	private boolean blackCheckmate; //true if black king in checkmate
-	private boolean whiteCheckmate;
+	private boolean blackCheck,whiteCheck;
+	private boolean blackCheckmate,whiteCheckmate; //true if king of said color in checkmate
 
 	public ChessModelImpl(){
+		WHITE = "WHITE";
+		BLACK = "BLACK";
 		board = new Square[8][8];
 	}
 	/**
@@ -42,8 +38,8 @@ public class ChessModelImpl implements ChessModel{
 		initBK =  board[0][4];
 		initWK =  board[7][4];
 		state = new ChessState();
-		player = "WHITE";
-		opponent = "BLACK";
+		player = WHITE;
+		opponent = BLACK;
 		updateStateObject(new ChessMove());
 		notifyObservers();
 	}
@@ -121,7 +117,7 @@ public class ChessModelImpl implements ChessModel{
 	}
 
 	private boolean isInCheck(String color){	
-		if(color.equals("BLACK")){
+		if(color.equals(BLACK)){
 			return blackCheck;
 		}
 		return whiteCheck;
@@ -203,8 +199,8 @@ public class ChessModelImpl implements ChessModel{
 		scoreSheet.addMove(move);	
 		updateCheckStatus();
 
-		if(colorInCheckmate("BLACK")){blackCheckmate = true;}
-		if(colorInCheckmate("WHITE")){whiteCheckmate = true;}
+		if(colorInCheckmate(BLACK)){blackCheckmate = true;}
+		if(colorInCheckmate(WHITE)){whiteCheckmate = true;}
 
 		//move completed so swap player and opponent colors
 		String temp = player;
@@ -214,9 +210,9 @@ public class ChessModelImpl implements ChessModel{
 		return true;
 	}
 	private void updateCheckStatus(){
-		if(kingInCheck("BLACK")){blackCheck = true;}
+		if(kingInCheck(BLACK)){blackCheck = true;}
 		else                    {blackCheck = false;}
-		if(kingInCheck("WHITE")){whiteCheck = true;}
+		if(kingInCheck(WHITE)){whiteCheck = true;}
 		else                    {whiteCheck = false;}
 	}
 
@@ -572,7 +568,7 @@ public class ChessModelImpl implements ChessModel{
 		Square newRookSqr = null;
 		Square intermediarySquare = null; //the square king must pass through
 
-		if (color.equals("WHITE")){
+		if (color.equals(WHITE)){
 			initK = initWK;
 	 		if (side.equals("KING")){
 				initR = initWKR;
@@ -587,7 +583,7 @@ public class ChessModelImpl implements ChessModel{
 				intermediarySquare = initK.west(); 
 			}
 		}
-		else if (color.equals("BLACK")){
+		else if (color.equals(BLACK)){
 			initK = initBK;
 			if (side.equals("KING")){
 				initR = initBKR;
@@ -654,8 +650,7 @@ public class ChessModelImpl implements ChessModel{
 	/**
 	 * creates all ChessPiece objects and inserts them in board array
 	 */
-	private void initializeBoard()
-	{
+	private void initializeBoard(){
 		for (int r=0; r < 8; r++){
 			for (int c=0; c < 8; c++){
 				board[r][c] = new Square(r, c);
@@ -732,8 +727,8 @@ public class ChessModelImpl implements ChessModel{
 	 * "BLACK" returns "WHITE"
 	 */
 	private String otherColor(String myColor) {
-		if (myColor.equals("WHITE")){ return "BLACK";}
-		return "WHITE";
+		if (myColor.equals(WHITE)){ return BLACK;}
+		return WHITE;
 	} 
 
 	/**
