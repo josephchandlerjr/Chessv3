@@ -10,8 +10,9 @@ import java.util.*;
 public class ChessModelImpl implements ChessModel{
 	private List<Observer> observers = new ArrayList<Observer>();
 	private ChessState state;
-	private Square[][] board;
-	private String WHITE,BLACK;
+	private Square[][] board = new Square[8][8];
+	private String WHITE = "WHITE";
+	private String BLACK = "BLACK";
 	private String player,opponent;
 	private Square initWK,initWKR,initWQR;
 	private Square initBK,initBKR,initBQR;
@@ -19,11 +20,6 @@ public class ChessModelImpl implements ChessModel{
 	private boolean blackCheck,whiteCheck;
 	private boolean blackCheckmate,whiteCheckmate; //true if king of said color in checkmate
 
-	public ChessModelImpl(){
-		WHITE = "WHITE";
-		BLACK = "BLACK";
-		board = new Square[8][8];
-	}
 	/**
 	 * API used it initialize a new game
 	 */
