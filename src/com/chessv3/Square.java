@@ -75,8 +75,7 @@ public class Square{
 	 * places piece on this square
 	 * @param piece ChessPiece object to put on this square
 	 */
-	public void setPiece(ChessPiece piece)
-	{
+	public void setPiece(ChessPiece piece){
 		this.previousPiece = this.piece;
 		this.piece = piece;
 	}
@@ -84,8 +83,7 @@ public class Square{
 	 * gets piece on this square
 	 * @return piece on this square or null if there is none
 	 */
-	public ChessPiece getPiece()
-	{
+	public ChessPiece getPiece(){
 		return piece;
 	}
 	/**
@@ -103,8 +101,7 @@ public class Square{
 	 * gets row
 	 * @return the row number of piece
 	 */
-	public int getRow()
-	{
+	public int getRow(){
 		return ROW;
 	}
 
@@ -112,8 +109,7 @@ public class Square{
 	 * gets column of piece
 	 * @return the column number of piece
 	 */
-	public int getCol()
-	{
+	public int getCol(){
 		return COL;
 	}
 
@@ -121,8 +117,7 @@ public class Square{
 	 * gets color of piece sitting on square
 	 * @return color of piece on square
 	 */
-	public String getPieceColor()
-	{
+	public String getPieceColor(){
 		if (piece == null){
 			return "";
 		}
@@ -134,8 +129,7 @@ public class Square{
 	 * @param piece ChessPiece reference at given location on board
 	 * @return true if parameter given is not a pointer to null
 	 */
-	public boolean isOccupied()
-	{
+	public boolean isOccupied(){
 		return piece != null;
 	}
 }
