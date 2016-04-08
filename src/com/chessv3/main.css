@@ -1,0 +1,32 @@
+
+/*----------------------------------------------------------
+ * Chess
+-----------------------------------------------------------*/
+.chess-board{
+	width: 432px;
+	height: 0;
+	margin: 0 auto;
+	opacity: 0;
+	visibility: hidden;
+}
+.board-black-square {
+	width: 50px;
+	height: 50px;
+	background-color: #663300;
+	border: 2px solid black;
+	float: left;
+}
+.board-white-square {
+	width: 50px;
+	height: 50px;
+	background-color: #ffffff;
+	border: 2px solid black;
+	float: left;
+}
+
+.is-visible {
+	height: auto;
+	opacity: 1;
+	visibility: visible;
+}
+
