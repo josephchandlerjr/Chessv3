@@ -66,6 +66,15 @@ var Chess =  {
 			alert('move requested');}
 		});
 		Chess.updateBoard();
+	},
+	removePiece : function(el){
+		var classList = el.attr('class').split(/\s+/);
+		$.each(classList, function(index,item){
+			if(item.startsWith('piece')){
+				el.removeClass(item);
+				return;
+			}
+		});
 	}
 }
 
@@ -80,5 +89,6 @@ $(document).ready(function(){
 	$('button.new-game').on('click',function(event){
 		event.preventDefault();
 		alert('click me long time');});
+
 });
 

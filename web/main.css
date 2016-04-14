@@ -30,3 +30,44 @@
 	visibility: visible;
 }
 
+/*----------------------------------------------------------
+ * Chess piece images
+-----------------------------------------------------------*/
+
+.black-pawn {
+	background: url('BlackPawn.png');
+}
+.black-rook {
+	background: url('BlackRook.png');
+}
+.black-bishop {
+	background: url('BlackBishop.png');
+}
+.black-knight {
+	background: url('BlackKnight.png');
+}
+.black-queen {
+	background: url('BlackQueen.png');
+}
+.black-king {
+	background: url('BlackKing.png');
+}
+.white-pawn {
+	background: url('WhitePawn.png');
+}
+.white-rook {
+	background: url('WhiteRook.png');
+}
+.white-bishop {
+	background: url('WhiteBishop.png');
+}
+.white-knight {
+	background: url('WhiteKnight.png');
+}
+.white-queen {
+	background: url('WhiteQueen.png');
+}
+.white-king {
+	background: url('WhiteKing.png');
+}
+
