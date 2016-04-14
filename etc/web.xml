@@ -1,0 +1,21 @@
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+
+<servlet>
+	<servlet-name>Board</servlet-name>
+	<servlet-class>com.chessv3.ChessBoardServlet</servlet-class>
+</servlet>
+
+
+<servlet-mapping>
+	<servlet-name>Board</servlet-name>
+	<url-pattern>/game.do</url-pattern>
+</servlet-mapping>
+
+<listener>
+	<listener-class>com.chessv3.ChessSessionListener</listener-class>
+</listener>
+
+</web-app>
