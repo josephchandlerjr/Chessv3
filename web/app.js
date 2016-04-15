@@ -3,6 +3,7 @@ var Chess =  {
 	fromCol : undefined,
 	toRow : undefined,
         toCol : undefined,
+	squares : [],
 	logTo : function(event){
 		event.preventDefault;
 		Chess.toRow = $(this).data('row');
@@ -15,10 +16,6 @@ var Chess =  {
 		Chess.makeMove();
 	},
 
-	makeMove :  function(fromRow,fromCol,toRow,toCol){
-		//ajax call here to takeAction;
-	},
-	
 	logFrom : function(event){
 		event.preventDefault;
 		Chess.fromRow = $(this).data('row');
@@ -39,19 +36,25 @@ var Chess =  {
 				square.on('mousedown',Chess.logFrom);
 				square.on('mouseup',Chess.logTo);
 				$('.chess-board').append(square);
+				this.squares.push(square);
 				color = color == white ? black : white; 
 			}
 		}
+		this.updateBoard();
 	},
 	updateBoard : function(){
+		var obj = this;
 		$.ajax('/Chess/game.do',{
 		type: 'GET',
-		data: {"fromRow":Chess.fromRow,
-		        "fromCol":Chess.fromCol,
-			"toRow":Chess.toRow,
-			"toCol":Chess.toCol},
-		success: function(){
-			alert('updated');}
+		success: function(result){
+			var pieces = result.split(" ");
+			for(var i=0; i<obj.squares.length; i++){
+				//var col = i % 8;
+				//var row = Math.floor(i / 8);
+				//console.log(row == obj.squares[i].data('row'));
+				obj.removePiece(obj.squares[i]);
+				obj.addPiece(obj.squares[i],pieces[i]);
+			}
 		});
 		
 	},
@@ -62,11 +65,12 @@ var Chess =  {
 		        "fromCol":Chess.fromCol,
 			"toRow":Chess.toRow,
 			"toCol":Chess.toCol},
-		success: function(){
+		success: function(result){
 			alert('move requested');}
 		});
 		Chess.updateBoard();
 	},
+	/* removePiece takes a DOM element to remove image from */
 	removePiece : function(el){
 		var classList = el.attr('class').split(/\s+/);
 		$.each(classList, function(index,item){
@@ -75,7 +79,12 @@ var Chess =  {
 				return;
 			}
 		});
+	},
+	/* addPiece takes a DOM element to add image to, and class name */
+	addPiece : function(el,name){
+		el.addClass("piece-"+name);
 	}
+
 }
 
 

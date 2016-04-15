@@ -34,40 +34,40 @@
  * Chess piece images
 -----------------------------------------------------------*/
 
-.black-pawn {
-	background: url('BlackPawn.png');
+.piece-B {
+	background-image: url('BlackPawn.png');
 }
-.black-rook {
-	background: url('BlackRook.png');
+.piece-BR{
+	background-image: url('BlackRook.png');
 }
-.black-bishop {
-	background: url('BlackBishop.png');
+.piece-BB{
+	background-image: url('BlackBishop.png');
 }
-.black-knight {
-	background: url('BlackKnight.png');
+.piece-BN{
+	background-image: url('BlackKnight.png');
 }
-.black-queen {
-	background: url('BlackQueen.png');
+.piece-BQ{
+	background-image: url('BlackQueen.png');
 }
-.black-king {
-	background: url('BlackKing.png');
+.piece-BK{
+	background-image: url('BlackKing.png');
 }
-.white-pawn {
-	background: url('WhitePawn.png');
+.piece-W{
+	background-image: url('WhitePawn.png');
 }
-.white-rook {
-	background: url('WhiteRook.png');
+.piece-WR{
+	background-image: url('WhiteRook.png');
 }
-.white-bishop {
-	background: url('WhiteBishop.png');
+.piece-WB{
+	background-image: url('WhiteBishop.png');
 }
-.white-knight {
-	background: url('WhiteKnight.png');
+.piece-WN{
+	background-image: url('WhiteKnight.png');
 }
-.white-queen {
-	background: url('WhiteQueen.png');
+.piece-WQ{
+	background-image: url('WhiteQueen.png');
 }
-.white-king {
-	background: url('WhiteKing.png');
+.piece-WK{
+	background-image: url('WhiteKing.png');
 }
 

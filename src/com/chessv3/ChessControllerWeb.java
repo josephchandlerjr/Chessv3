@@ -34,10 +34,11 @@ public class ChessControllerWeb implements ChessController{
 		if(piece != null)
 			model.promote(row, col, color, piece);
 	}
+	public void update(){};
 	/**
 	 * called by Observerables when change made
 	 */
-	public void update(){
+	public String[][] getBoard(){
 		ChessState state = model.getState();
 		if(state.promotion){
 			int row = state.rowOfPromotion;
@@ -47,6 +48,7 @@ public class ChessControllerWeb implements ChessController{
 			//and call promote
 		}
 		//set labels somehow 
+		return model.getBoard();
 	}
 	/**
 	 * public API to create new game

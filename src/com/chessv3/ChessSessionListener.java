@@ -7,6 +7,7 @@ public class ChessSessionListener implements ServletContextListener{
 	public void contextInitialized(ServletContextEvent event){
 		ServletContext sc = event.getServletContext();
 		ChessControllerWeb controller = new ChessControllerWeb();
+		controller.newGame();
 		sc.setAttribute("chess", controller);
 		System.out.println("online motherfucker");
 	}
