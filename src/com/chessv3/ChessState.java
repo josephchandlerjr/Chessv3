@@ -24,5 +24,23 @@ public class ChessState{
 		toMove = "WHITE";
 	}
 	
+	/**
+	 * returns json string
+	 */
+	public String toString(){
+		String result = "{";
+		result += "\"toMove\":" + "\"" + toMove + "\"" + ",";
+		result += "\"whiteToMove\":" + whiteToMove+ ",";
+		result += "\"blackToMove\":" + blackToMove+ ",";
+		result += "\"whiteInCheck\":" + whiteInCheck+ ",";
+		result += "\"whiteHasWon\":" + whiteHasWon+ ",";
+		result += "\"blackInCheck\":" + blackInCheck+ ",";
+		result += "\"blackHasWon\":" + blackHasWon+ ",";
+		result += "\"promotion\":" + promotion+ ",";
+		result += "\"lastPlayerToMove\":" + "\""+lastPlayerToMove+"\"" + ",";
+		result += "\"rowOfPromotion\":" + rowOfPromotion+ ",";
+		result += "\"colOfPromotion\":" + colOfPromotion;
+		return result + "}";
+	}
 }
 

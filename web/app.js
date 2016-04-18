@@ -8,7 +8,7 @@ var Chess =  {
 		event.preventDefault;
 		Chess.toRow = $(this).data('row');
 		Chess.toCol = $(this).data('col');
-		alert('from '+ 
+		console.log('from '+ 
 		      Chess.fromRow+' '+ 
 		      Chess.fromCol+' to '+ 
 		      Chess.toRow+' '+ 
@@ -43,32 +43,33 @@ var Chess =  {
 		this.updateBoard();
 	},
 	updateBoard : function(){
-		var obj = this;
+		console.log('about to update board');
+		var self = this;
 		$.ajax('/Chess/game.do',{
 		type: 'GET',
+		dataType: 'json',
 		success: function(result){
-			var pieces = result.split(" ");
-			for(var i=0; i<obj.squares.length; i++){
-				//var col = i % 8;
-				//var row = Math.floor(i / 8);
-				//console.log(row == obj.squares[i].data('row'));
-				obj.removePiece(obj.squares[i]);
-				obj.addPiece(obj.squares[i],pieces[i]);
+			console.log('here in the success function of updateBoard');
+			console.log(result);
+			var pieces = result["boardRepr"].split(" ");
+			for(var i=0; i<self.squares.length; i++){
+				self.removePiece(self.squares[i]);
+				self.addPiece(self.squares[i],pieces[i]);
 			}
-		});
-		
+		}});
 	},
 	makeMove : function(){
+		self = this;
 		$.ajax('/Chess/game.do',{
 		type: 'POST',
-		data: {"fromRow":Chess.fromRow,
-		        "fromCol":Chess.fromCol,
-			"toRow":Chess.toRow,
-			"toCol":Chess.toCol},
-		success: function(result){
-			alert('move requested');}
+		data: {"fromRow":self.fromRow,
+		        "fromCol":self.fromCol,
+			"toRow":self.toRow,
+			"toCol":self.toCol},
+		success: function(){
+			self.updateBoard();
+		}
 		});
-		Chess.updateBoard();
 	},
 	/* removePiece takes a DOM element to remove image from */
 	removePiece : function(el){
@@ -97,7 +98,7 @@ $(document).ready(function(){
 
 	$('button.new-game').on('click',function(event){
 		event.preventDefault();
-		alert('click me long time');});
+		console.log('click me long time');});
 
 });
 

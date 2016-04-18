@@ -14,6 +14,17 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 	<url-pattern>/game.do</url-pattern>
 </servlet-mapping>
 
+<servlet>
+	<servlet-name>Status</servlet-name>
+	<servlet-class>com.chessv3.ChessStatusServlet</servlet-class>
+</servlet>
+
+
+<servlet-mapping>
+	<servlet-name>Status</servlet-name>
+	<url-pattern>/status.do</url-pattern>
+</servlet-mapping>
+
 <listener>
 	<listener-class>com.chessv3.ChessSessionListener</listener-class>
 </listener>
