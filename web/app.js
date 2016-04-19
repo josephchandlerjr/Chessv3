@@ -1,3 +1,6 @@
+// ---------------------------------------------------
+// Modal Chess
+// ---------------------------------------------------
 var Chess =  {
 	fromRow : undefined,
 	fromCol : undefined,
@@ -5,7 +8,7 @@ var Chess =  {
         toCol : undefined,
 	squares : [],
 	logTo : function(event){
-		event.preventDefault;
+		event.preventDefault();
 		Chess.toRow = $(this).data('row');
 		Chess.toCol = $(this).data('col');
 		console.log('from '+ 
@@ -17,7 +20,7 @@ var Chess =  {
 	},
 
 	logFrom : function(event){
-		event.preventDefault;
+		event.preventDefault();
 		Chess.fromRow = $(this).data('row');
 		Chess.fromCol = $(this).data('col');
 
@@ -33,8 +36,8 @@ var Chess =  {
 				var square = $('<div data-row='+i+' data-col='+j+'></div>');
 				square.addClass(color);
 				// listeners for moves
-				square.on('mousedown',Chess.logFrom);
-				square.on('mouseup',Chess.logTo);
+				square.on('mousedown',this.logFrom);
+				square.on('mouseup',this.logTo);
 				$('.chess-board').append(square);
 				this.squares.push(square);
 				color = color == white ? black : white; 
@@ -55,6 +58,28 @@ var Chess =  {
 			for(var i=0; i<self.squares.length; i++){
 				self.removePiece(self.squares[i]);
 				self.addPiece(self.squares[i],pieces[i]);
+			}
+			var blackLabel = $('.black-label');
+			var whiteLabel = $('.white-label');
+			if(result["whiteToMove"]){
+				whiteLabel.text("your move");
+				blackLabel.text("waiting");
+			}
+			if(result["blackToMove"]){
+				blackLabel.text("your move");
+				whiteLabel.text("waiting");
+			}
+			if(result["whiteInCheck"])
+				whiteLabel.text("In Check!");
+			if(result["blackInCheck"])
+				blackLabel.text("In Check!");
+			if(result["whiteHasWon"]){
+				whiteLabel.text("You Win!");
+				blackLabel.text("You Lose :( ");
+			}
+			if(result["blackHasWon"]){
+				blackLabel.text("You Win!");
+				whiteLabel.text("You Lose :( ");
 			}
 		}});
 	},
@@ -88,13 +113,21 @@ var Chess =  {
 
 }
 
+// ---------------------------------------------------
+// Document Ready
+// ---------------------------------------------------
 
 $(document).ready(function(){
 	Chess.init();
 	$('.play-chess').on('click',function(event){
 		event.preventDefault();
-		$('.chess-board').toggleClass('is-visible');
+		$('.chess-board').addClass('is-visible');
+		$('.modal-overlay').addClass('is-visible');
 		});
+	$('.modal-overlay').on('click',function(event){
+		$('.chess-board').removeClass('is-visible');
+		$('.modal-overlay').removeClass('is-visible');
+	});
 
 	$('button.new-game').on('click',function(event){
 		event.preventDefault();
