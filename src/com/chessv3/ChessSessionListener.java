@@ -9,13 +9,14 @@ public class ChessSessionListener implements HttpSessionListener{
 		ChessControllerWeb controller = new ChessControllerWeb();
 		controller.newGame();
 		session.setAttribute("chess", controller);
+		System.out.println("session created");
 	}
 
 	public void sessionDestroyed(HttpSessionEvent event){
 		HttpSession session = event.getSession();
-		ChessControllerWeb controller = new ChessControllerWeb();
+		ChessControllerWeb controller = (ChessControllerWeb) session.getAttribute("chess");
 		controller.exit();
-		//not necessary
+		System.out.println("session destroyed");
 	}
 }
 

@@ -35,6 +35,8 @@ var Chess =  {
 			for(var j=0 ; j < 8; j++){
 				var square = $('<div data-row='+i+' data-col='+j+'></div>');
 				square.addClass(color);
+				square.addClass('board-square');
+				//square.addClass('board-square');
 				// listeners for moves
 				square.on('mousedown',this.logFrom);
 				square.on('mouseup',this.logTo);
@@ -44,6 +46,7 @@ var Chess =  {
 			}
 		}
 		this.updateBoard();
+
 	},
 	updateBoard : function(){
 		console.log('about to update board');

@@ -3,7 +3,7 @@
  * Chess
 -----------------------------------------------------------*/
 .chess-board{
-	width: 25%;
+	width: 640px;
 	height: 0;
 	left: 50%;
 	box-shadow: 0 2px 6px rgba(0,0,0,0.5);
@@ -15,15 +15,17 @@
 	z-index: 2;
 }
 .board-black-square {
-	width: 50px;
-	height: 50px;
+	display: table-cell;
+	width: 76px;
+	height: 76px;
 	background-color: #663300;
 	border: 2px solid black;
 	float: left;
 }
 .board-white-square {
-	width: 50px;
-	height: 50px;
+	display: table-cell;
+	width: 76px;
+	height: 76px;
 	background-color: #ffffff;
 	border: 2px solid black;
 	float: left;
@@ -94,38 +96,74 @@
 
 .piece-B {
 	background-image: url('BlackPawn.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-BR{
 	background-image: url('BlackRook.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-BB{
 	background-image: url('BlackBishop.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-BN{
 	background-image: url('BlackKnight.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-BQ{
 	background-image: url('BlackQueen.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-BK{
 	background-image: url('BlackKing.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-W{
 	background-image: url('WhitePawn.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-WR{
 	background-image: url('WhiteRook.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-WB{
 	background-image: url('WhiteBishop.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-WN{
 	background-image: url('WhiteKnight.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-WQ{
 	background-image: url('WhiteQueen.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 .piece-WK{
 	background-image: url('WhiteKing.png');
+	background-repeat: no-repeat;
+	background-position: center;
 }
+
 
