@@ -1,18 +1,20 @@
 package com.chessv3;
 
-import javax.servlet.*;
+import javax.servlet.http.*;
 
-public class ChessSessionListener implements ServletContextListener{
+public class ChessSessionListener implements HttpSessionListener{
 	
-	public void contextInitialized(ServletContextEvent event){
-		ServletContext sc = event.getServletContext();
+	public void sessionCreated(HttpSessionEvent event){
+		HttpSession session = event.getSession();
 		ChessControllerWeb controller = new ChessControllerWeb();
 		controller.newGame();
-		sc.setAttribute("chess", controller);
-		System.out.println("online motherfucker");
+		session.setAttribute("chess", controller);
 	}
 
-	public void contextDestroyed(ServletContextEvent event){
+	public void sessionDestroyed(HttpSessionEvent event){
+		HttpSession session = event.getSession();
+		ChessControllerWeb controller = new ChessControllerWeb();
+		controller.exit();
 		//not necessary
 	}
 }

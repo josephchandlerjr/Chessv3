@@ -10,7 +10,7 @@ public class ChessBoardServlet extends HttpServlet {
 		          throws IOException, ServletException {
 			  response.setContentType("application/json");
 			  ChessControllerWeb controller = 
-				  (ChessControllerWeb) getServletContext().getAttribute("chess");
+				  (ChessControllerWeb) request.getSession().getAttribute("chess");
 			  String[][] board = controller.getBoard();
 			  String status = controller.getStatus();
 			  PrintWriter out = response.getWriter(); 
@@ -29,7 +29,7 @@ public class ChessBoardServlet extends HttpServlet {
 		          throws IOException, ServletException {
 			  response.setContentType("text/plain");
 			  ChessController controller = 
-				  (ChessController) getServletContext().getAttribute("chess");
+				  (ChessController) request.getSession().getAttribute("chess");
 			  int fromRow = Integer.parseInt(request.getParameter("fromRow"));
 			  int fromCol = Integer.parseInt(request.getParameter("fromCol"));
 			  int toRow = Integer.parseInt(request.getParameter("toRow"));
