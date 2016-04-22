@@ -1,34 +1,31 @@
 // ---------------------------------------------------
 // Modal Chess
 // ---------------------------------------------------
-var Chess =  {
-	fromRow : undefined,
-	fromCol : undefined,
-	toRow : undefined,
-        toCol : undefined,
-	squares : [],
-	logTo : function(event){
+function Chess() {
+	self = this;
+	this.fromRow = undefined;
+	this.fromCol = undefined;
+	this.toRow = undefined;
+        this.toCol = undefined;
+	this.squares = [];
+	this.logTo = function(event){
 		event.preventDefault();
-		Chess.toRow = $(this).data('row');
-		Chess.toCol = $(this).data('col');
-		console.log('from '+ 
-		      Chess.fromRow+' '+ 
-		      Chess.fromCol+' to '+ 
-		      Chess.toRow+' '+ 
-		      Chess.toCol);
-		Chess.makeMove();
-	},
+		self.toRow = $(this).data('row');
+		self.toCol = $(this).data('col');
+		self.makeMove();
+	};
 
-	logFrom : function(event){
+	this.logFrom = function(event){
 		event.preventDefault();
-		Chess.fromRow = $(this).data('row');
-		Chess.fromCol = $(this).data('col');
+		self.fromRow = $(this).data('row');
+		self.fromCol = $(this).data('col');
 
-	},
-	init : function() {
+	};
+	this.init = function() {
 		var white = 'board-white-square';
 		var black = 'board-black-square';
 		var color = white;
+		var chessBoard = $('.chess-board');
 
 		for(var i=0 ; i < 8; i++){
 			color = color == white ? black : white; 
@@ -36,27 +33,22 @@ var Chess =  {
 				var square = $('<div data-row='+i+' data-col='+j+'></div>');
 				square.addClass(color);
 				square.addClass('board-square');
-				//square.addClass('board-square');
-				// listeners for moves
-				square.on('mousedown',this.logFrom);
-				square.on('mouseup',this.logTo);
-				$('.chess-board').append(square);
+				chessBoard.append(square);
 				this.squares.push(square);
 				color = color == white ? black : white; 
 			}
 		}
+		var boardSquare = $('.board-square');
+		boardSquare.on('mousedown',this.logFrom);
+		boardSquare.on('mouseup',this.logTo);
 		this.updateBoard();
 
-	},
-	updateBoard : function(){
-		console.log('about to update board');
-		var self = this;
+	};
+	this.updateBoard = function(){
 		$.ajax('/Chess/game.do',{
-		type: 'GET',
+		type : 'GET',
 		dataType: 'json',
 		success: function(result){
-			console.log('here in the success function of updateBoard');
-			console.log(result);
 			var pieces = result["boardRepr"].split(" ");
 			for(var i=0; i<self.squares.length; i++){
 				self.removePiece(self.squares[i]);
@@ -85,9 +77,8 @@ var Chess =  {
 				whiteLabel.text("You Lose :( ");
 			}
 		}});
-	},
-	makeMove : function(){
-		self = this;
+	};
+	this.makeMove = function(){
 		$.ajax('/Chess/game.do',{
 		type: 'POST',
 		data: {"fromRow":self.fromRow,
@@ -98,9 +89,9 @@ var Chess =  {
 			self.updateBoard();
 		}
 		});
-	},
+	};
 	/* removePiece takes a DOM element to remove image from */
-	removePiece : function(el){
+	this.removePiece = function(el){
 		var classList = el.attr('class').split(/\s+/);
 		$.each(classList, function(index,item){
 			if(item.startsWith('piece')){
@@ -108,9 +99,9 @@ var Chess =  {
 				return;
 			}
 		});
-	},
+	};
 	/* addPiece takes a DOM element to add image to, and class name */
-	addPiece : function(el,name){
+	this.addPiece = function(el,name){
 		el.addClass("piece-"+name);
 	}
 
@@ -121,7 +112,8 @@ var Chess =  {
 // ---------------------------------------------------
 
 $(document).ready(function(){
-	Chess.init();
+	var chess = new Chess();
+	chess.init();
 	$('.play-chess').on('click',function(event){
 		event.preventDefault();
 		$('.chess-board').addClass('is-visible');
