@@ -5,40 +5,39 @@ import java.util.*;
 /**
  * Model in our MVC
  * validates and performs moves on the board
- * holds a Score object, a scoresheet of moves
  */
 public class ChessModelImpl2 implements ChessModel{
 	private List<Observer> observers = new ArrayList<Observer>();
 	private ChessState state;
 	private int[][] board;
 
-	int NONE = -1;
+	final int NONE = -1;
 
-	int BLACK = 0;
-	int WHITE = 1; // same as piece % 2
+	final int BLACK = 0;
+	final int WHITE = 1; // same as piece % 2
 
 	int PLAYER; 
 	int OPPONENT;
 
-	int WHITEPAWN = 1;
-	int WHITEROOK = 3;
-	int WHITEBISHOP = 5;
-	int WHITEKNIGHT = 7;
-	int WHITEQUEEN = 9;
-	int WHITEKING = 11;
+	final int WHITEPAWN = 1;
+	final int WHITEROOK = 3;
+	final int WHITEBISHOP = 5;
+	final int WHITEKNIGHT = 7;
+	final int WHITEQUEEN = 9;
+	final int WHITEKING = 11;
 
-	int BLACKPAWN = 2;
-	int BLACKROOK = 4;
-	int BLACKBISHOP = 6;
-	int BLACKKNIGHT = 8;
-	int BLACKQUEEN = 10;
-	int BLACKKING = 12;
+	final int BLACKPAWN = 2;
+	final int BLACKROOK = 4;
+	final int BLACKBISHOP = 6;
+	final int BLACKKNIGHT = 8;
+	final int BLACKQUEEN = 10;
+	final int BLACKKING = 12;
 
-	int NORMAL = 22;
-	int ENPASSANT = 33; 
-	int TWOROWPAWN = 44;
-	int CASTLEQUEEN = 55;
-	int CASTLEKING = 66;
+	final int NORMAL = 22;
+	final int ENPASSANT = 33; 
+	final int TWOROWPAWN = 44;
+	final int CASTLEQUEEN = 55;
+	final int CASTLEKING = 66;
 	
 	//flags
 	
@@ -47,13 +46,13 @@ public class ChessModelImpl2 implements ChessModel{
 	boolean whiteCanCastleKingSide = true;
 	boolean whiteCanCastleQueenSide = true;
 
-	boolean WhiteQueensRookHasMoved;
-	boolean WhiteKingsRookHasMoved;
+	boolean whiteQueensRookHasMoved;
+	boolean whiteKingsRookHasMoved;
 	boolean blackQueensRookHasMoved;
 	boolean blackKingsRookHasMoved;
 
 	int[]  lastMove = {-1,-1,-1,-1}; // so as not to be mistaken for an actual previous move
-	int lastMovetype = NONE;
+	int lastMoveType = NONE;
 
 	/**
 	 * API used it initialize a new game
@@ -283,11 +282,11 @@ public class ChessModelImpl2 implements ChessModel{
 		blackCanCastleQueenSide = true;
 		whiteCanCastleKingSide = true;
 		whiteCanCastleQueenSide = true;
-		WhiteKingsRookHasMoved = false;
+		whiteKingsRookHasMoved = false;
 		blackQueensRookHasMoved = false;
 		blackKingsRookHasMoved = false;
 		lastMove = new int[]{-1,-1,-1,-1}; // so as not to be mistaken for an actual previous move
-		lastMovetype = NONE;
+		lastMoveType = NONE;
 	}
 	//used aftera move is completed
 	public void setFlags(int moveType, int[] fromSquare, int[] toSquare, int color, int piece){
@@ -298,14 +297,14 @@ public class ChessModelImpl2 implements ChessModel{
 			}else if (isRook(piece)){
 					if(getRow(fromSquare) == 0 && 
 					getCol(fromSquare) == 0 && 
-					!WhiteQueensRookHasMoved){
+					!whiteQueensRookHasMoved){
 						whiteQueensRookHasMoved = true;
 						whiteCanCastleQueenSide = false;
 					}
 					else if(getRow(fromSquare) == 0 && 
 					getCol(fromSquare) == 7 && 
-					!WhiteKingsRookHasMoved){
-						whiteKingssRookHasMoved = true;
+					!whiteKingsRookHasMoved){
+						whiteKingsRookHasMoved = true;
 						whiteCanCastleKingSide = false;
 					}
 
@@ -324,14 +323,14 @@ public class ChessModelImpl2 implements ChessModel{
 					else if(getRow(fromSquare) == 0 && 
 					getCol(fromSquare) == 7 && 
 					!blackKingsRookHasMoved){
-						blackKingssRookHasMoved = true;
+						blackKingsRookHasMoved = true;
 						blackCanCastleKingSide = false;
 					}
 
 			}
 		}
-		latMoveType = moveType;
-		lastMove = new int[]{fromSquare[0].fromSquare[1],toSquare[0],toSquare[1]}; 
+		lastMoveType = moveType;
+		lastMove = new int[]{fromSquare[0],fromSquare[1],toSquare[0],toSquare[1]}; 
 	}
 
 	public int getMoveType(int attacker, int attacked, int fromRow, int fromCol, int toRow, int toCol){
@@ -367,7 +366,7 @@ public class ChessModelImpl2 implements ChessModel{
 	*/
 	public int[][] defineMove(int moveType, int[] fromSquare, int[]toSquare, 
 			          int attacker, int attacked, int attackerColor){ 
-		int[][] result;
+		int[][] result = null;
 		switch (moveType) {
 		case NORMAL: result = defineNormalMove(fromSquare, toSquare, attacker, attacked, attackerColor);
 			      break;
@@ -388,14 +387,14 @@ public class ChessModelImpl2 implements ChessModel{
 	        int fromCol = getCol(fromSquare);
 		int toRow = getRow(toSquare);
 		int toCol = getCol(toSquare);
-		int color = getColor(attacker);
-		boolean isValid;
+		int color = getPieceColor(attacker);
+		boolean isValid = false;
 		if (isPawn(attacker)){ isValid = isValidPawnMove(color, fromSquare, toSquare);}
-		if (isRook(attacker)){ isvalid = isValidRookMove(fromSquare, toSquare);}
-		if (isKnight(attacker)){ isvalid = isValidKnightMove(fromSquare, toSquare);}
-		if (isBishop(attacker)){ isvalid = isValidBishopMove(fromSquare, toSquare);}
-		if (isQueen(attacker)){ isvalid = isValidQueenMove(fromSquare, toSquare);}
-		if (isKing(attacker)){ isvalid = isValidKingMove(fromSquare, toSquare);}		
+		if (isRook(attacker)){ isValid = isValidRookMove(fromSquare, toSquare);}
+		if (isKnight(attacker)){ isValid = isValidKnightMove(fromSquare, toSquare);}
+		if (isBishop(attacker)){ isValid = isValidBishopMove(fromSquare, toSquare);}
+		if (isQueen(attacker)){ isValid = isValidQueenMove(fromSquare, toSquare);}
+		if (isKing(attacker)){ isValid = isValidKingMove(fromSquare, toSquare);}		
 		int[][] result ={
 				{ fromRow, fromCol, -1},
 				{ toRow, toCol, attacker },
@@ -437,7 +436,7 @@ public class ChessModelImpl2 implements ChessModel{
 	        int fromCol = getCol(fromSquare);
 		int toRow = getRow(toSquare);
 		int toCol = getCol(toSquare);
-		int direction = piece.getDirection();
+		int direction = getDirection(attacker);
 		int[][] result ={
 				{ fromRow, fromCol, -1},
 				{ toRow, toCol, attacker },
@@ -451,8 +450,7 @@ public class ChessModelImpl2 implements ChessModel{
 		if(fromCol == toCol                 &&      // advance two rows, first move only
 		   fromRow + 2 * direction == toRow &&
 		   attacked == NONE                 &&
-		   !piecesBetween(from,to)    &&
-		   !scoreSheet.contains(from)){
+		   !piecesBetween(fromSquare,toSquare)){
 			 return result;
 		 }
 		 return null;
@@ -470,7 +468,7 @@ public class ChessModelImpl2 implements ChessModel{
 		location[1] += 1;
                 return location;
 	}
-	public boolean canCastleQeenSide(int color){
+	public boolean canCastleQueenSide(int color){
 		if(color == WHITE)
 			return whiteCanCastleQueenSide;
 		return blackCanCastleQueenSide;
@@ -526,6 +524,7 @@ public class ChessModelImpl2 implements ChessModel{
 				{ toRow, toCol, attacker},
 				{ fromRow, 7, -1}
 				};
+		return result;
 	}
 
 	//returns true if all three pieces are together, on same column, row or diagonal and middle in middle 
@@ -571,13 +570,14 @@ public class ChessModelImpl2 implements ChessModel{
 
 	public int[][] attackersOfLocation(int[] toLocation, int attackersColor){
 		List<Integer> resultAsList = new ArrayList<Integer>();
-		int[] result; 
+		int attacked = getPiece(toLocation);
 		for (int r=0; r < 8; r++){
 			for(int c=0; c<8; c++){
 				int[] fromLocation = {r,c};
-				int piece = getPiece(fromLocation);
-				if (piece != NONE && getPieceColor(piece) == attackersColor){
-					if (defineNormalMove(fromLocation, toSquare, attacker, 
+				int attacker = getPiece(fromLocation);
+				int attackerColor = getPieceColor(attacker);
+				if (attacker != NONE && attackerColor == attackersColor){
+					if (defineNormalMove(fromLocation, toLocation, attacker, 
 		                            attacked, attackerColor) != null){
 						resultAsList.add(r);
 						resultAsList.add(c);
@@ -587,23 +587,24 @@ public class ChessModelImpl2 implements ChessModel{
 		}
 		int[][] result = new int[resultAsList.size()/2][2]; 
 		int index = 0;
-		for(int i=0; i < resultAsList.size(); i+=2){
-			result[index] = new int[]{resultAsList.get(i), resultAsList.get(i+1)};
-			index++;
+		for(int i=0; i < result.length; i++){
+			result[i] = new int[]{resultAsList.get(index), resultAsList.get(index+1)};
+			index += 2;
 		}
 		return result;
 	}
 
 
 	public int[] findKing(int color){
-		for(int row : board){
-			for (int col : row){
+		for(int row=0; row<8; row++){
+			for (int col=0; col<8; col++){
 				int piece = board[row][col];
 				if( isKing(piece)  && (piece % 2 == color) ){
 					return new int[]{row, col}; // anonymous array
 				}
 			}
 		}
+		return null;
 		//will throw compile time exception cause no return statement here, fix later
 	}
 
@@ -632,12 +633,12 @@ public class ChessModelImpl2 implements ChessModel{
 		int toCol = sqr2[1];
 		return sameColumn(fromCol, toCol);
 	}
-	public boolean sameColumn(int[] sq1, int[] sqr2, int[] sqr3){
+	public boolean sameColumn(int[] sqr1, int[] sqr2, int[] sqr3){
 		return sameColumn(sqr1,sqr2) && 
 		       sameColumn(sqr1,sqr3) && 
 		       sameColumn(sqr2,sqr3);
 	}
-	public boolean sameRow(int[] sq1, int[] sqr2, int[] sqr3){
+	public boolean sameRow(int[] sqr1, int[] sqr2, int[] sqr3){
 		return sameRow(sqr1,sqr2) && 
 		       sameRow(sqr1,sqr3) && 
 		       sameRow(sqr2,sqr3);
@@ -656,12 +657,12 @@ public class ChessModelImpl2 implements ChessModel{
 		return sameRow(fromRow, toRow);
 	}
 	
-	public boolean sameSquare(int[] sq1, int[] sq2){
-		return sameRow(sq1,sq2) && sameColumn(sq1,sq2);
+	public boolean sameSquare(int[] sqr1, int[] sqr2){
+		return sameRow(sqr1,sqr2) && sameColumn(sqr1,sqr2);
 	}
 	
-	public boolean sameDiagonal(int[] sq1, int[] sqr2){
-		return sameForwardDiagonal(sq1,sq2) || sameBackDiagonal(sq1,sq2);
+	public boolean sameDiagonal(int[] sqr1, int[] sqr2){
+		return sameForwardDiagonal(sqr1,sqr2) || sameBackDiagonal(sqr1,sqr2);
 	}
 
 	public boolean sameBackDiagonal(int[] sqr1, int[] sqr2){
@@ -671,7 +672,7 @@ public class ChessModelImpl2 implements ChessModel{
 		int toCol = sqr2[1];
 		return sameBackDiagonal(fromRow, fromCol, toRow, toCol);
 	}
-	public boolean sameBackDiagonal(int[] sq1, int[] sqr2, int[] sqr3){
+	public boolean sameBackDiagonal(int[] sqr1, int[] sqr2, int[] sqr3){
 		return sameBackDiagonal(sqr1,sqr2) && 
 		       sameBackDiagonal(sqr1,sqr3) && 
 		       sameBackDiagonal(sqr2,sqr3);
@@ -683,7 +684,7 @@ public class ChessModelImpl2 implements ChessModel{
 		int toCol = sqr2[1];
 		return sameForwardDiagonal(fromRow, fromCol, toRow, toCol);
 	}
-	public boolean sameForwardDiagonal(int[] sq1, int[] sqr2, int[] sqr3){
+	public boolean sameForwardDiagonal(int[] sqr1, int[] sqr2, int[] sqr3){
 		return sameForwardDiagonal(sqr1,sqr2) && 
 		       sameForwardDiagonal(sqr1,sqr3) && 
 		       sameForwardDiagonal(sqr2,sqr3);
@@ -707,43 +708,45 @@ public class ChessModelImpl2 implements ChessModel{
 	}
 
 	public boolean isPinnedToColumn(int kingColor, int row, int col){
-		int king = findKing(kingColor);
-		int location = {row, col};
-                if (!samColumn(king, location))
+		int[] king = findKing(kingColor);
+		int[] location = {row, col};
+                if (!sameColumn(king, location))
 			return false;
 		for(int attackerRow=0; attackerRow< 8; attackerRow++){
-			int attacker = getPiece(attackerRow,col);
+			int[] attackerLocation = {attackerRow,col};
+			int attacker = getPiece(attackerLocation);
 			if(attacker == NONE)
 				continue;
 			int attackerColor = getPieceColor(attacker);
       			if(attackerColor == kingColor)
 				continue;
-			if(isRook(attacker) || isQueen(attacker) && isBetween(location, king, attacker))
+			if(isRook(attacker) || isQueen(attacker) && isBetween(location, king, attackerLocation))
 				return true;
       		}
 		return false;
 	}
 	public boolean isPinnedToRow(int kingColor, int row, int col){
-		int king = findKing(kingColor);
-		int location = {row, col};
+		int[] king = findKing(kingColor);
+		int[] location = {row, col};
                 if (!sameRow(king,location))
 			return false;
 		
 		for(int attackerCol=0; attackerCol< 8; attackerCol++){
-			int attacker = getPiece(row,attackerCol);
+			int[] attackerLocation = {row, attackerCol};
+			int attacker = getPiece(attackerLocation);
 			if(attacker == NONE)
 				continue;
 			int attackerColor = getPieceColor(attacker);
       			if(attackerColor == kingColor)
 				continue;
-			if(isRook(attacker) || isQueen(attacker) && isBetween(location, king, attacker))
+			if(isRook(attacker) || isQueen(attacker) && isBetween(location, king, attackerLocation))
 				return true;
       		}
 		return false;
 	}
 	public boolean isPinnedToBackDiagonal(int kingColor, int row, int col){
-		int king = findKing(kingColor);
-		int location = {row, col};
+		int[] king = findKing(kingColor);
+		int[] location = {row, col};
 		if(!sameBackDiagonal(king,location))
 			return false;
 		for(int r=0;r<8;r++){
@@ -764,7 +767,7 @@ public class ChessModelImpl2 implements ChessModel{
 		return false;
 	}
 	public boolean isPinnedToForwardDiagonal(int kingColor, int row, int col){
-		int king = findKing(kingColor);
+		int[] king = findKing(kingColor);
 		int[] location = new int[]{row, col};
 		if(!sameForwardDiagonal(king,location))
 			return false;
@@ -793,11 +796,9 @@ public class ChessModelImpl2 implements ChessModel{
 		return getPieceColor(piece1) == getPieceColor(piece2);
 	}
 
-	public boolean isUnderAttack(int row, int col){}
-
 	public boolean piecesBetween(int[] from, int[] to) {
 			List<int[]> squares = squaresBetween(from, to);
-			for (in[] square : squares) {
+			for (int[] square : squares) {
 				if (getPiece(square) != NONE) {
 					return true;
 				}
@@ -806,7 +807,7 @@ public class ChessModelImpl2 implements ChessModel{
 		}
 	public int getPiece(int r, int c){
 		int[] loc = {r,c};
-		return board[row][col];	
+		return board[r][c];	
 	}
 
 	public int getPiece(int[] location){
@@ -848,3 +849,5 @@ public class ChessModelImpl2 implements ChessModel{
 	}
 
 }
+
+
